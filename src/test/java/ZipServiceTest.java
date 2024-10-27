@@ -2,11 +2,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.kafka.KafkaPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.core.io.ClassPathResource;
 import com.zip.services.ZipService;
 
 import java.io.File;
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ZipServiceTest {
 
@@ -23,7 +27,11 @@ public class ZipServiceTest {
     public void testImportNewSolution() {
         var result = zipService.importFilesFromZip(getZip("valid.zip"));
 
-        System.out.println("endresult new solution: " + result);
+        Assertions.assertAll(
+                () -> assertEquals(3, result.size()),
+                () -> assertNotNull(result.getFirst().uuid()),
+                () -> assertNotNull(result.getFirst().commonId())
+        );
     }
 
     @Test

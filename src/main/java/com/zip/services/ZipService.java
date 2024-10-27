@@ -52,8 +52,7 @@ public class ZipService {
                                         this::getFileType,
                                         Function.identity()
                                 ),
-                                mapOfZipEntries ->
-                                        new ZipEntryHolder(mapOfZipEntries.get(JSON), mapOfZipEntries.get(PYTHON))
+                                map -> new ZipEntryHolder(map.get(JSON), map.get(PYTHON))
                         ))
                 );
     }
