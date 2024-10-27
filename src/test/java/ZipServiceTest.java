@@ -3,42 +3,31 @@ import com.zip.kafka.KafkaPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
-import com.zip.services.CurrentSolution;
 import com.zip.services.ZipService;
 
 import java.io.File;
 import java.io.IOException;
 
-public class CurrentSolutionTest {
+public class ZipServiceTest {
 
     private ZipService zipService;
-
-    private CurrentSolution currentSolution;
 
     @BeforeEach
     void setup() {
         ObjectMapper objectMapper = new ObjectMapper();
         KafkaPublisher kafkaPublisher = new KafkaPublisher(objectMapper);
         zipService = new ZipService(kafkaPublisher);
-        currentSolution = new CurrentSolution(objectMapper);
-    }
-
-    @Test
-    public void testImportFunction() {
-        var result = currentSolution.importFunction(getZip("valid.zip"));
-
-        System.out.println("endresult: " + result);
     }
 
     @Test
     public void testImportNewSolution() {
-        var result = zipService.importFilesFromZip(getZip("valid2.zip"));
+        var result = zipService.importFilesFromZip(getZip("valid.zip"));
 
         System.out.println("endresult new solution: " + result);
     }
 
     @Test
-    public void testImportNewSolution_ShouldReturnEmptyList() {
+    public void whenJsonFileIsMissing_thenShouldReturnEmptyList() {
         final var result = zipService.importFilesFromZip(getZip("invalid.zip"));
         assert result.isEmpty();
     }

@@ -33,6 +33,7 @@ public class KafkaPublisher {
                 convertToKafkaCommands(zipFile, zipEntryMap));
 
         sendToKafka(kafkaCommands);
+
         return kafkaCommands;
     }
 
@@ -46,22 +47,18 @@ public class KafkaPublisher {
         ZipEntry jsonEntry = zipEntryHolder.json();
         ZipEntry pyEntry = zipEntryHolder.python();
 
-        User metadata = parseJsonToUser(zipFile, jsonEntry);
-        final var newFileId = fileClientMock(pyEntry);
+        final var user = parseJsonToUser(zipFile, jsonEntry);
+        final var newFileIdFromWWW = fileClientMock(pyEntry);
         final var newId = UUID.randomUUID().toString();
 
-        return new KafkaCommand(metadata, newFileId, newId);
+        return new KafkaCommand(user, newFileIdFromWWW, newId);
     }
 
     private User parseJsonToUser(ZipFile zipFile, ZipEntry jsonEntry) {
         try (InputStream inputStream = zipFile.getInputStream(jsonEntry)) {
             final var jsonStr = new String(inputStream.readAllBytes());
             final var metadata = parseJson(jsonStr);
-            return new User(
-                    metadata.id(),
-                    UUID.randomUUID().toString(),
-                    "kalle",
-                    metadata.description()); //Copy with new values
+            return new User(metadata.id(), UUID.randomUUID().toString(), "kalle", metadata.description());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
