@@ -1,4 +1,4 @@
-package exceptions;
+package com.zip.exceptions;
 
 public record Success<T>(T result) implements Try<T> {
     @Override

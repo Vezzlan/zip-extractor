@@ -2,6 +2,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
+import com.zip.services.CurrentSolution;
+import com.zip.services.NewSolution;
 
 import java.io.File;
 import java.io.IOException;

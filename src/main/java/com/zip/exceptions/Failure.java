@@ -1,4 +1,4 @@
-package exceptions;
+package com.zip.exceptions;
 
 public record Failure<T>(Throwable throwable) implements Try<T> {
     @Override

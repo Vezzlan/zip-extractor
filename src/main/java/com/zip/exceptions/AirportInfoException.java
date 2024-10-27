@@ -1,4 +1,4 @@
-package exceptions;
+package com.zip.exceptions;
 
 public class AirportInfoException extends Exception {
 

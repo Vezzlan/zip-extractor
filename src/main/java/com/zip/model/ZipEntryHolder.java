@@ -1,4 +1,4 @@
-package model;
+package com.zip.model;
 
 import java.util.zip.ZipEntry;
 

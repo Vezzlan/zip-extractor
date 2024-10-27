@@ -1,7 +1,9 @@
-import exceptions.AirportInfoException;
-import exceptions.Failure;
-import exceptions.Success;
-import exceptions.Try;
+package com.zip;
+
+import com.zip.exceptions.AirportInfoException;
+import com.zip.exceptions.Failure;
+import com.zip.exceptions.Success;
+import com.zip.exceptions.Try;
 
 import java.util.List;
 

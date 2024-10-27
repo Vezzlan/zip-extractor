@@ -1,4 +1,4 @@
-package exceptions;
+package com.zip.exceptions;
 
 import java.util.concurrent.Callable;
 import java.util.function.Function;

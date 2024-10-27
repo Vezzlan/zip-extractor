@@ -1,4 +1,6 @@
-import model.User;
+package com.zip.kafka;
+
+import com.zip.model.User;
 
 public class KafkaPublisher {
 

@@ -1,11 +1,15 @@
+package com.zip.services;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import model.User;
-import model.KafkaCommand;
-import model.ZipEntryHolder;
+import com.zip.kafka.KafkaPublisher;
+import com.zip.model.CreatedResourceIds;
+import com.zip.model.User;
+import com.zip.model.KafkaCommand;
+import com.zip.model.ZipEntryHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import zipUtils.ZipFileHandler;
+import com.zip.zipUtils.ZipFileHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +55,7 @@ public class NewSolution {
                 .filter(entry -> !entry.getName().startsWith("__MACOSX"))
                 .filter(this::isJsonOrPython)
                 .collect(groupingBy(
-                        this::removeFileExtension,
+                        this::getFileName,
                         collectingAndThen(
                                 toMap(this::getFileExtension, Function.identity()),
                                 mapOfZipEntries -> new ZipEntryHolder(mapOfZipEntries.get(JSON), mapOfZipEntries.get(PYTHON))
@@ -64,7 +68,7 @@ public class NewSolution {
         return zipEntry.getName().endsWith(".json") || zipEntry.getName().endsWith(".py");
     }
 
-    private String removeFileExtension(ZipEntry zipEntry) {
+    private String getFileName(ZipEntry zipEntry) {
         return  zipEntry.getName().substring(0, zipEntry.getName().indexOf("."));
     }
 
@@ -108,10 +112,9 @@ public class NewSolution {
         }
     }
 
-    private List<CreatedResourceIds> convertToCreatedResources(final List<KafkaCommand> kafkaCommands) {
-        return kafkaCommands.stream()
-                .map(command -> new CreatedResourceIds(command.id(), command.fileId()))
-                .toList();
+    private String fileClientMock(ZipEntry pyCode) {
+        //Mock client with PyCode.
+        return UUID.randomUUID().toString();
     }
 
     private User parseJson(String jsonStr) {
@@ -122,14 +125,16 @@ public class NewSolution {
         }
     }
 
-    private String fileClientMock(ZipEntry pyCode) {
-        //Mock client with PyCode.
-        return UUID.randomUUID().toString();
-    }
-
     private void sendToKafka(List<KafkaCommand> kafkaCommands) {
         kafkaCommands.stream()
                 .map(dto -> new User(dto.id(), dto.fileId(), dto.user().name(), dto.user().description()))
                 .forEach(KafkaPublisher::sendCommand);
     }
+
+    private List<CreatedResourceIds> convertToCreatedResources(final List<KafkaCommand> kafkaCommands) {
+        return kafkaCommands.stream()
+                .map(command -> new CreatedResourceIds(command.id(), command.fileId()))
+                .toList();
+    }
+
 }
