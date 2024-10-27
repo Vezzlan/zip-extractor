@@ -48,7 +48,7 @@ public class NewSolution {
                 .collect(groupingBy(
                         this::getFileName,
                         collectingAndThen(
-                                toMap(this::getFileExtension, Function.identity()),
+                                toMap(this::getFileType, Function.identity()),
                                 mapOfZipEntries -> new ZipEntryHolder(mapOfZipEntries.get(JSON), mapOfZipEntries.get(PYTHON))
 
                         ))
@@ -63,7 +63,7 @@ public class NewSolution {
         return  zipEntry.getName().substring(0, zipEntry.getName().indexOf("."));
     }
 
-    private String getFileExtension(ZipEntry entry) {
+    private String getFileType(ZipEntry entry) {
         return entry.getName().endsWith(".json") ? JSON : PYTHON;
     }
 
