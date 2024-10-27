@@ -77,8 +77,7 @@ public class NewSolution {
                 .anyMatch(entry -> entry.getValue().json() == null);
     }
 
-    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String,
-            ZipEntryHolder> zipEntryMap) {
+    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryHolder> zipEntryMap) {
         return zipEntryMap.values().stream()
                 .map(zipEntryHolder -> toKafkaCommand(zipFile, zipEntryHolder))
                 .toList();
