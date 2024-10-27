@@ -2,6 +2,7 @@ package com.zip.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.model.ZipEntryHolder;
+import com.zip.services.ZipService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -21,7 +22,8 @@ class KafkaPublisherTest {
     @BeforeEach
     void setup() {
         ObjectMapper objectMapper = new ObjectMapper();
-        kafkaPublisher = new KafkaPublisher(objectMapper);
+        ZipService zipService = new ZipService();
+        kafkaPublisher = new KafkaPublisher(objectMapper, zipService);
     }
 
     @Test
@@ -31,11 +33,16 @@ class KafkaPublisherTest {
         expected.put("file2", new ZipEntryHolder(new ZipEntry("file2.json"), new ZipEntry("file2.py")));
         expected.put("file3", new ZipEntryHolder(new ZipEntry("file3.json"), new ZipEntry("file3.py")));
 
+        //Mocka det ovan eller? För att kunna testa rätt saker?
+        var result = kafkaPublisher.sendCommand(getZip("valid.zip"));
 
-        var result = kafkaPublisher.sendCommand(getZip("valid.zip"), expected);
+        final var first = result.stream().filter(command -> "1".equals(command.user().id())).findAny().orElseThrow();
+        final var second = result.stream().filter(command -> "2".equals(command.user().id())).findAny().orElseThrow();
 
         assertAll(
-                () -> assertEquals(3, result.size())
+                () -> assertEquals(3, result.size()),
+                () -> assertEquals("first file!", first.user().description()),
+                () -> assertEquals("second file!", second.user().description())
         );
     }
 

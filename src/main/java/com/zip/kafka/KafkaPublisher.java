@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -24,18 +25,32 @@ public class KafkaPublisher {
 
     private final ObjectMapper objectMapper;
 
+    private final ZipService zipService;
+
     @Autowired
-    public KafkaPublisher(ObjectMapper objectMapper) {
+    public KafkaPublisher(ObjectMapper objectMapper, ZipService zipService) {
         this.objectMapper = objectMapper;
+        this.zipService = zipService;
     }
 
-    public List<KafkaCommand> sendCommand(File file, Map<String, ZipEntryHolder> zipEntryMap) {
+    public List<KafkaCommand> sendCommand(File file) {
+        final var zipEntryMap = zipService.importFilesFromZip(file);
+
+        if (isJsonMissing(zipEntryMap)) {
+            return Collections.emptyList();
+        }
+
         final var kafkaCommands = ZipFileHandler.withZipFile(file, zipFile ->
                 convertToKafkaCommands(zipFile, zipEntryMap));
 
         sendToKafka(kafkaCommands);
 
         return kafkaCommands;
+    }
+
+    private boolean isJsonMissing(Map<String, ZipEntryHolder> zipEntriesMap) {
+        return zipEntriesMap.entrySet().stream()
+                .anyMatch(entry -> entry.getValue().json() == null);
     }
 
     private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryHolder> zipEntryMap) {
