@@ -4,14 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import com.zip.services.CurrentSolution;
-import com.zip.services.NewSolution;
+import com.zip.services.ZipService;
 
 import java.io.File;
 import java.io.IOException;
 
 public class CurrentSolutionTest {
 
-    private NewSolution newSolution;
+    private ZipService zipService;
 
     private CurrentSolution currentSolution;
 
@@ -19,7 +19,7 @@ public class CurrentSolutionTest {
     void setup() {
         ObjectMapper objectMapper = new ObjectMapper();
         KafkaPublisher kafkaPublisher = new KafkaPublisher(objectMapper);
-        newSolution = new NewSolution(kafkaPublisher);
+        zipService = new ZipService(kafkaPublisher);
         currentSolution = new CurrentSolution(objectMapper);
     }
 
@@ -32,14 +32,14 @@ public class CurrentSolutionTest {
 
     @Test
     public void testImportNewSolution() {
-        var result = newSolution.importFilesFromZip(getZip("valid2.zip"));
+        var result = zipService.importFilesFromZip(getZip("valid2.zip"));
 
         System.out.println("endresult new solution: " + result);
     }
 
     @Test
     public void testImportNewSolution_ShouldReturnEmptyList() {
-        final var result = newSolution.importFilesFromZip(getZip("invalid.zip"));
+        final var result = zipService.importFilesFromZip(getZip("invalid.zip"));
         assert result.isEmpty();
     }
 

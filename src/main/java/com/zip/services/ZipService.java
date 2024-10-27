@@ -17,7 +17,7 @@ import java.util.zip.ZipFile;
 import static java.util.stream.Collectors.*;
 
 @Component
-public class NewSolution {
+public class ZipService {
 
     private final KafkaPublisher kafkaPublisher;
 
@@ -26,7 +26,7 @@ public class NewSolution {
     private static final String PYTHON = "python";
 
     @Autowired
-    public NewSolution(KafkaPublisher kafkaPublisher) {
+    public ZipService(KafkaPublisher kafkaPublisher) {
         this.kafkaPublisher = kafkaPublisher;
     }
 
@@ -50,7 +50,6 @@ public class NewSolution {
                         collectingAndThen(
                                 toMap(this::getFileType, Function.identity()),
                                 mapOfZipEntries -> new ZipEntryHolder(mapOfZipEntries.get(JSON), mapOfZipEntries.get(PYTHON))
-
                         ))
                 );
     }
