@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -45,19 +46,6 @@ public class NewSolution {
         return convertToCreatedResources(kafkaCommands);
     }
 
-    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String,
-            ZipEntryHolder> zipEntryMap) {
-        return zipEntryMap.values().stream()
-                .map(zipEntryHolder -> toKafkaCommand(zipFile, zipEntryHolder))
-                .toList();
-    }
-
-    private List<CreatedResourceIds> convertToCreatedResources(final List<KafkaCommand> kafkaCommands) {
-        return kafkaCommands.stream()
-                .map(command -> new CreatedResourceIds(command.id(), command.fileId()))
-                .toList();
-    }
-
     private Map<String, ZipEntryHolder> mapZipEntries(ZipFile zipFile) {
         return zipFile.stream()
                 .filter(entry -> !entry.getName().startsWith("__MACOSX"))
@@ -65,32 +53,35 @@ public class NewSolution {
                 .collect(groupingBy(
                         this::removeFileExtension,
                         collectingAndThen(
-                                toMap(
-                                        entry -> entry.getName().endsWith(".json") ? JSON : PYTHON,
-                                        entry -> entry
-                                ),
+                                toMap(this::getFileExtension, Function.identity()),
                                 collectedMap -> new ZipEntryHolder(collectedMap.get(JSON), collectedMap.get(PYTHON))
 
-                        )));
+                        ))
+                );
     }
 
     private boolean isJsonOrPython(ZipEntry zipEntry) {
         return zipEntry.getName().endsWith(".json") || zipEntry.getName().endsWith(".py");
     }
 
-    private Map<String, ZipEntry> getTypedEntry(ZipEntry entry) {
-        if (entry.getName().endsWith(".json")) return Map.of(JSON, entry);
-        if (entry.getName().endsWith(".py")) return Map.of(PYTHON, entry);
-        return null;
-    }
-
     private String removeFileExtension(ZipEntry zipEntry) {
         return  zipEntry.getName().substring(0, zipEntry.getName().indexOf("."));
+    }
+
+    private String getFileExtension(ZipEntry entry) {
+        return entry.getName().endsWith(".json") ? JSON : PYTHON;
     }
 
     private boolean isJsonMissing(Map<String, ZipEntryHolder> zipEntriesMap) {
         return zipEntriesMap.entrySet().stream()
                 .anyMatch(entry -> entry.getValue().json() == null);
+    }
+
+    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String,
+            ZipEntryHolder> zipEntryMap) {
+        return zipEntryMap.values().stream()
+                .map(zipEntryHolder -> toKafkaCommand(zipFile, zipEntryHolder))
+                .toList();
     }
 
     private KafkaCommand toKafkaCommand(ZipFile zipFile, ZipEntryHolder zipEntryHolder) {
@@ -106,9 +97,9 @@ public class NewSolution {
 
     private User parseJsonToUser(ZipFile zipFile, ZipEntry jsonEntry) {
         try (InputStream inputStream = zipFile.getInputStream(jsonEntry)) {
-           final var jsonStr = new String(inputStream.readAllBytes());
-           final var metadata = parseJson(jsonStr);
-           return new User(
+            final var jsonStr = new String(inputStream.readAllBytes());
+            final var metadata = parseJson(jsonStr);
+            return new User(
                     metadata.id(),
                     UUID.randomUUID().toString(),
                     "kalle",
@@ -116,6 +107,12 @@ public class NewSolution {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<CreatedResourceIds> convertToCreatedResources(final List<KafkaCommand> kafkaCommands) {
+        return kafkaCommands.stream()
+                .map(command -> new CreatedResourceIds(command.id(), command.fileId()))
+                .toList();
     }
 
     private User parseJson(String jsonStr) {
