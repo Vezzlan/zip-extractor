@@ -48,8 +48,12 @@ public class ZipService {
                 .collect(groupingBy(
                         this::getFileName,
                         collectingAndThen(
-                                toMap(this::getFileType, Function.identity()),
-                                mapOfZipEntries -> new ZipEntryHolder(mapOfZipEntries.get(JSON), mapOfZipEntries.get(PYTHON))
+                                toMap(
+                                        this::getFileType,
+                                        Function.identity()
+                                ),
+                                mapOfZipEntries -> new ZipEntryHolder(
+                                        mapOfZipEntries.get(JSON), mapOfZipEntries.get(PYTHON))
                         ))
                 );
     }
