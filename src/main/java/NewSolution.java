@@ -54,7 +54,7 @@ public class NewSolution {
                         this::removeFileExtension,
                         collectingAndThen(
                                 toMap(this::getFileExtension, Function.identity()),
-                                collectedMap -> new ZipEntryHolder(collectedMap.get(JSON), collectedMap.get(PYTHON))
+                                mapOfZipEntries -> new ZipEntryHolder(mapOfZipEntries.get(JSON), mapOfZipEntries.get(PYTHON))
 
                         ))
                 );
