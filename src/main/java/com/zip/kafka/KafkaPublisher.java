@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.model.KafkaCommand;
 import com.zip.model.User;
 import com.zip.model.ZipEntryHolder;
+import com.zip.services.ZipService;
 import com.zip.zipUtils.ZipFileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,10 +46,10 @@ public class KafkaPublisher {
 
     private KafkaCommand toKafkaCommand(ZipFile zipFile, ZipEntryHolder zipEntryHolder) {
         ZipEntry jsonEntry = zipEntryHolder.json();
-        ZipEntry pyEntry = zipEntryHolder.python();
+        ZipEntry pythonEntry = zipEntryHolder.python();
 
         final var user = parseJsonToUser(zipFile, jsonEntry);
-        final var newFileIdFromWWW = fileClientMock(pyEntry);
+        final var newFileIdFromWWW = fileClientMock(pythonEntry);
         final var newId = UUID.randomUUID().toString();
 
         return new KafkaCommand(user, newFileIdFromWWW, newId);
@@ -80,11 +81,11 @@ public class KafkaPublisher {
     private void sendToKafka(List<KafkaCommand> kafkaCommands) {
         kafkaCommands.stream()
                 .map(dto -> new User(dto.id(), dto.fileId(), dto.user().name(), dto.user().description()))
-                .forEach(KafkaPublisher::sendCommand);
+                .forEach(KafkaPublisher::sendToKafka);
     }
 
-    public static void sendCommand(User sendCommand) {
-        System.out.println("kafka: " + sendCommand);
+    private static void sendToKafka(User sendCommand) {
+        //Send to Kafka
     }
 
 }

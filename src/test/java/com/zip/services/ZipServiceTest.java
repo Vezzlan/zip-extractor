@@ -1,7 +1,8 @@
+package com.zip.services;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
-import com.zip.services.ZipService;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class ZipServiceTest {
 
     @Test
     public void whenZipContainsPairOfJsonAndPythonFiles_AllEntriesShouldBeMapped() {
-        var result = zipService.importFilesFromZip(getZip("valid.zip"));
+        final var result = zipService.importFilesFromZip(getZip("valid.zip"));
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),
                 () -> assertNotNull(result.get("file1").python()),
@@ -34,11 +35,12 @@ public class ZipServiceTest {
     @Test
     public void whenJsonFileIsMissing_mapShouldHaveEmptyJsonEntry() {
         final var result = zipService.importFilesFromZip(getZip("invalid.zip"));
-
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),
                 () -> assertNotNull(result.get("file1").python()),
-                () -> assertNull(result.get("file3").json()),
+                () -> assertNull(result.get("file2").json()),
+                () -> assertNotNull(result.get("file2").python()),
+                () -> assertNotNull(result.get("file3").json()),
                 () -> assertNotNull(result.get("file3").python())
         );
     }
