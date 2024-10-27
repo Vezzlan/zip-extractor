@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zip.kafka.KafkaPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -17,7 +18,8 @@ public class CurrentSolutionTest {
     @BeforeEach
     void setup() {
         ObjectMapper objectMapper = new ObjectMapper();
-        newSolution = new NewSolution(objectMapper);
+        KafkaPublisher kafkaPublisher = new KafkaPublisher(objectMapper);
+        newSolution = new NewSolution(kafkaPublisher);
         currentSolution = new CurrentSolution(objectMapper);
     }
 

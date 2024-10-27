@@ -24,15 +24,15 @@ import static java.util.stream.Collectors.*;
 @Component
 public class NewSolution {
 
-    private final ObjectMapper objectMapper;
+    private final KafkaPublisher kafkaPublisher;
 
     private static final String JSON = "json";
 
     private static final String PYTHON = "python";
 
     @Autowired
-    public NewSolution(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    public NewSolution(KafkaPublisher kafkaPublisher) {
+        this.kafkaPublisher = kafkaPublisher;
     }
 
     public List<CreatedResourceIds> importFilesFromZip(File file) {
@@ -42,10 +42,7 @@ public class NewSolution {
             return Collections.emptyList();
         }
 
-        final var kafkaCommands = ZipFileHandler.withZipFile(file, zipFile ->
-                convertToKafkaCommands(zipFile, zipEntryMap));
-
-        sendToKafka(kafkaCommands);
+        final var kafkaCommands = kafkaPublisher.sendCommand(file, zipEntryMap);
 
         return convertToCreatedResources(kafkaCommands);
     }
@@ -79,56 +76,6 @@ public class NewSolution {
     private boolean isJsonMissing(Map<String, ZipEntryHolder> zipEntriesMap) {
         return zipEntriesMap.entrySet().stream()
                 .anyMatch(entry -> entry.getValue().json() == null);
-    }
-
-    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryHolder> zipEntryMap) {
-        return zipEntryMap.values().stream()
-                .map(zipEntryHolder -> toKafkaCommand(zipFile, zipEntryHolder))
-                .toList();
-    }
-
-    private KafkaCommand toKafkaCommand(ZipFile zipFile, ZipEntryHolder zipEntryHolder) {
-        ZipEntry jsonEntry = zipEntryHolder.json();
-        ZipEntry pyEntry = zipEntryHolder.python();
-
-        User metadata = parseJsonToUser(zipFile, jsonEntry);
-        final var newFileId = fileClientMock(pyEntry);
-        final var newId = UUID.randomUUID().toString();
-
-        return new KafkaCommand(metadata, newFileId, newId);
-    }
-
-    private User parseJsonToUser(ZipFile zipFile, ZipEntry jsonEntry) {
-        try (InputStream inputStream = zipFile.getInputStream(jsonEntry)) {
-            final var jsonStr = new String(inputStream.readAllBytes());
-            final var metadata = parseJson(jsonStr);
-            return new User(
-                    metadata.id(),
-                    UUID.randomUUID().toString(),
-                    "kalle",
-                    metadata.description()); //Copy with new values
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String fileClientMock(ZipEntry pyCode) {
-        //Mock client with PyCode.
-        return UUID.randomUUID().toString();
-    }
-
-    private User parseJson(String jsonStr) {
-        try {
-            return objectMapper.readValue(jsonStr, User.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void sendToKafka(List<KafkaCommand> kafkaCommands) {
-        kafkaCommands.stream()
-                .map(dto -> new User(dto.id(), dto.fileId(), dto.user().name(), dto.user().description()))
-                .forEach(KafkaPublisher::sendCommand);
     }
 
     private List<CreatedResourceIds> convertToCreatedResources(final List<KafkaCommand> kafkaCommands) {
