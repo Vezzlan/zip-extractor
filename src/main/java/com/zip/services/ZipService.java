@@ -1,10 +1,6 @@
 package com.zip.services;
 
-import com.zip.kafka.KafkaPublisher;
-import com.zip.model.CreatedResourceIds;
-import com.zip.model.KafkaCommand;
 import com.zip.model.ZipEntryHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.zip.zipUtils.ZipFileHandler;
 
@@ -19,26 +15,12 @@ import static java.util.stream.Collectors.*;
 @Component
 public class ZipService {
 
-    private final KafkaPublisher kafkaPublisher;
-
     private static final String JSON = "json";
 
     private static final String PYTHON = "python";
 
-    @Autowired
-    public ZipService(KafkaPublisher kafkaPublisher) {
-        this.kafkaPublisher = kafkaPublisher;
-    }
-
-    public List<CreatedResourceIds> importFilesFromZip(File file) {
-        final var zipEntryMap = ZipFileHandler.withZipFile(file, this::mapZipEntries);
-
-        if (isJsonMissing(zipEntryMap)) {
-            return Collections.emptyList();
-        }
-
-        final var kafkaCommands = kafkaPublisher.sendCommand(file, zipEntryMap);
-        return convertToCreatedResources(kafkaCommands);
+    public Map<String, ZipEntryHolder> importFilesFromZip(File file) {
+        return ZipFileHandler.withZipFile(file, this::mapZipEntries);
     }
 
     private Map<String, ZipEntryHolder> mapZipEntries(ZipFile zipFile) {
@@ -67,17 +49,6 @@ public class ZipService {
 
     private String getFileType(ZipEntry entry) {
         return entry.getName().endsWith(".json") ? JSON : PYTHON;
-    }
-
-    private boolean isJsonMissing(Map<String, ZipEntryHolder> zipEntriesMap) {
-        return zipEntriesMap.entrySet().stream()
-                .anyMatch(entry -> entry.getValue().json() == null);
-    }
-
-    private List<CreatedResourceIds> convertToCreatedResources(final List<KafkaCommand> kafkaCommands) {
-        return kafkaCommands.stream()
-                .map(command -> new CreatedResourceIds(command.id(), command.fileId()))
-                .toList();
     }
 
 }

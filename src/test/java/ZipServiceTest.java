@@ -1,16 +1,12 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zip.kafka.KafkaPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.core.io.ClassPathResource;
 import com.zip.services.ZipService;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ZipServiceTest {
 
@@ -18,26 +14,33 @@ public class ZipServiceTest {
 
     @BeforeEach
     void setup() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        KafkaPublisher kafkaPublisher = new KafkaPublisher(objectMapper);
-        zipService = new ZipService(kafkaPublisher);
+        zipService = new ZipService();
     }
 
     @Test
-    public void testImportNewSolution() {
+    public void whenZipContainsPairOfJsonAndPythonFiles_AllEntriesShouldBeMapped() {
         var result = zipService.importFilesFromZip(getZip("valid.zip"));
-
-        Assertions.assertAll(
-                () -> assertEquals(3, result.size()),
-                () -> assertNotNull(result.getFirst().uuid()),
-                () -> assertNotNull(result.getFirst().commonId())
+        assertAll(
+                () -> assertNotNull(result.get("file1").json()),
+                () -> assertNotNull(result.get("file1").python()),
+                () -> assertNotNull(result.get("file2").json()),
+                () -> assertNotNull(result.get("file2").python()),
+                () -> assertNotNull(result.get("file3").json()),
+                () -> assertNotNull(result.get("file3").python())
         );
+
     }
 
     @Test
-    public void whenJsonFileIsMissing_thenShouldReturnEmptyList() {
+    public void whenJsonFileIsMissing_mapShouldHaveEmptyJsonEntry() {
         final var result = zipService.importFilesFromZip(getZip("invalid.zip"));
-        assert result.isEmpty();
+
+        assertAll(
+                () -> assertNotNull(result.get("file1").json()),
+                () -> assertNotNull(result.get("file1").python()),
+                () -> assertNull(result.get("file3").json()),
+                () -> assertNotNull(result.get("file3").python())
+        );
     }
 
     private File getZip(String zipFile) {
