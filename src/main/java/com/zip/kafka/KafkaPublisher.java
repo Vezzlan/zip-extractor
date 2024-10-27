@@ -33,10 +33,8 @@ public class KafkaPublisher {
                 convertToKafkaCommands(zipFile, zipEntryMap));
 
         sendToKafka(kafkaCommands);
-
         return kafkaCommands;
     }
-
 
     private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryHolder> zipEntryMap) {
         return zipEntryMap.values().stream()
