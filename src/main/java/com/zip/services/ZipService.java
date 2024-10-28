@@ -23,13 +23,15 @@ public class ZipService {
         return ZipFileHandler.withZipFile(file, this::mapZipEntries);
     }
 
-    public List<String> getFileNames(File file) {
-        return ZipFileHandler.withZipFile(file, zipFile ->
-                zipFile.stream()
-                        .map(ZipEntry::getName)
-                        .filter(name -> !name.startsWith("__MACOSX"))
-                        .toList()
-        );
+    public List<String> getZipEntries(File file) {
+        return ZipFileHandler.withZipFile(file, this::getZipEntries);
+    }
+
+    private List<String> getZipEntries(ZipFile zipFile) {
+        return zipFile.stream()
+                .map(ZipEntry::getName)
+                .filter(name -> !name.startsWith("__MACOSX"))
+                .toList();
     }
 
     private Map<String, ZipEntryHolder> mapZipEntries(ZipFile zipFile) {

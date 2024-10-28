@@ -37,7 +37,7 @@ public class ExecuteService {
     }
 
     public List<String> convertEntriesToIds(File file) {
-        final var entries = zipService.getFileNames(file);
+        final var entries = zipService.getZipEntries(file);
         return getIdFromFileClient(entries).stream()
                 .map(name -> switch (name) {
                     case Success(String result) -> result;
