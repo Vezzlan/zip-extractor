@@ -5,7 +5,7 @@ import com.zip.exceptions.Failure;
 import com.zip.exceptions.Success;
 import com.zip.exceptions.Try;
 import com.zip.kafka.KafkaPublisher;
-import com.zip.model.CreatedResourceIds;
+import com.zip.model.ResourceIds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,10 +29,10 @@ public class ExecuteService {
         this.zipService = zipService;
     }
 
-    public List<CreatedResourceIds> executeFlow(File file) {
+    public List<ResourceIds> executeFlow(File file) {
         final var kafkaCommands = kafkaPublisher.sendCommand(file);
         return kafkaCommands.stream()
-                .map(command -> new CreatedResourceIds(command.id(), command.fileId()))
+                .map(command -> new ResourceIds(command.id(), command.fileId()))
                 .toList();
     }
 
