@@ -1,6 +1,7 @@
 package com.zip.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
 import com.zip.services.ZipService;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,8 @@ class KafkaPublisherTest {
     void setup() {
         ObjectMapper objectMapper = new ObjectMapper();
         ZipService zipService = new ZipService();
-        kafkaPublisher = new KafkaPublisher(objectMapper, zipService);
+        FakeFileClient fileClient = new FakeFileClient();
+        kafkaPublisher = new KafkaPublisher(objectMapper, zipService, fileClient);
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.zip.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
 import com.zip.model.User;
 import com.zip.model.ZipEntryHolder;
@@ -27,14 +28,17 @@ public class KafkaPublisher {
 
     private final ZipService zipService;
 
+    private final FakeFileClient fileClient;
+
     @Autowired
-    public KafkaPublisher(ObjectMapper objectMapper, ZipService zipService) {
+    public KafkaPublisher(ObjectMapper objectMapper, ZipService zipService, FakeFileClient fileClient) {
         this.objectMapper = objectMapper;
         this.zipService = zipService;
+        this.fileClient = fileClient;
     }
 
     public List<KafkaCommand> sendCommand(File file) {
-        final var zipEntryMap = zipService.importFilesFromZip(file);
+        final var zipEntryMap = zipService.mapZipEntries(file);
 
         if (isJsonMissing(zipEntryMap)) {
             return Collections.emptyList();
@@ -60,14 +64,10 @@ public class KafkaPublisher {
     }
 
     private KafkaCommand toKafkaCommand(ZipFile zipFile, ZipEntryHolder zipEntryHolder) {
-        ZipEntry jsonEntry = zipEntryHolder.json();
-        ZipEntry pythonEntry = zipEntryHolder.python();
-
-        final var user = parseJsonToUser(zipFile, jsonEntry);
-        final var newFileIdFromWWW = fileClientMock(pythonEntry);
+        final var user = parseJsonToUser(zipFile, zipEntryHolder.json());
+        final var fileId = fileClient.getFileId(zipEntryHolder.python());
         final var newId = UUID.randomUUID().toString();
-
-        return new KafkaCommand(newId, newFileIdFromWWW, user);
+        return new KafkaCommand(newId, fileId, user);
     }
 
     private User parseJsonToUser(ZipFile zipFile, ZipEntry jsonEntry) {
@@ -78,11 +78,6 @@ public class KafkaPublisher {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private String fileClientMock(ZipEntry pyCode) {
-        //Mock client with PyCode.
-        return UUID.randomUUID().toString();
     }
 
     private User parseJson(String jsonStr) {

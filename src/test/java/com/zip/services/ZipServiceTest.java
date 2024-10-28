@@ -20,7 +20,7 @@ public class ZipServiceTest {
 
     @Test
     public void whenZipContainsPairOfJsonAndPythonFiles_AllEntriesShouldBeMapped() {
-        final var result = zipService.importFilesFromZip(getZip("valid.zip"));
+        final var result = zipService.mapZipEntries(getZip("valid.zip"));
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),
                 () -> assertNotNull(result.get("file1").python()),
@@ -34,7 +34,7 @@ public class ZipServiceTest {
 
     @Test
     public void whenJsonFileIsMissing_mapShouldHaveEmptyJsonEntry() {
-        final var result = zipService.importFilesFromZip(getZip("invalid.zip"));
+        final var result = zipService.mapZipEntries(getZip("invalid.zip"));
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),
                 () -> assertNotNull(result.get("file1").python()),

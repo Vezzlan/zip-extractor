@@ -19,8 +19,17 @@ public class ZipService {
 
     private static final String PYTHON = "python";
 
-    public Map<String, ZipEntryHolder> importFilesFromZip(File file) {
+    public Map<String, ZipEntryHolder> mapZipEntries(File file) {
         return ZipFileHandler.withZipFile(file, this::mapZipEntries);
+    }
+
+    public List<String> getFileNames(File file) {
+        return ZipFileHandler.withZipFile(file, zipFile ->
+                zipFile.stream()
+                        .map(ZipEntry::getName)
+                        .filter(name -> !name.startsWith("__MACOSX"))
+                        .toList()
+        );
     }
 
     private Map<String, ZipEntryHolder> mapZipEntries(ZipFile zipFile) {
