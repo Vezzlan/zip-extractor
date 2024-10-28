@@ -24,7 +24,7 @@ class ExecuteServiceTest {
     }
 
     @Test
-    void readZipEntries_convertEntriesToUuidsAndOneError() {
+    void whenReadingZipEntries_convertEntriesToUuidsAndOneError() {
         final var result = executeService.convertEntriesToIds(getZip("invalid.zip"));
 
         var hasError = result.stream().anyMatch(string -> string.contains("Error"));
