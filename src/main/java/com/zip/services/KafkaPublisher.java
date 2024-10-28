@@ -1,4 +1,4 @@
-package com.zip.kafka;
+package com.zip.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,7 +6,6 @@ import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
 import com.zip.model.User;
 import com.zip.model.ZipEntryHolder;
-import com.zip.services.ZipService;
 import com.zip.zipUtils.ZipFileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

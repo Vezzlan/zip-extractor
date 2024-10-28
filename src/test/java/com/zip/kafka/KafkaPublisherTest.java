@@ -3,6 +3,7 @@ package com.zip.kafka;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
+import com.zip.services.KafkaPublisher;
 import com.zip.services.ZipService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,10 @@ class KafkaPublisherTest {
     }
 
     private KafkaCommand resultWithId(List<KafkaCommand> results, String id) {
-        return results.stream().filter(command -> id.equals(command.user().id())).findAny().orElseThrow();
+        return results.stream()
+                .filter(command -> id.equals(command.user().id()))
+                .findAny()
+                .orElseThrow();
     }
 
     private File getZip(String zipFile) {

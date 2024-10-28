@@ -4,7 +4,6 @@ import com.zip.client.FakeFileClient;
 import com.zip.exceptions.Failure;
 import com.zip.exceptions.Success;
 import com.zip.exceptions.Try;
-import com.zip.kafka.KafkaPublisher;
 import com.zip.model.ResourceIds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

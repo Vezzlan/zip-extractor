@@ -1,7 +1,6 @@
 package com.zip.services;
 
 import com.zip.client.FakeFileClient;
-import com.zip.kafka.KafkaPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -25,13 +24,13 @@ class ExecuteServiceTest {
     }
 
     @Test
-    void convertEntriesToIds() {
-        final var result = executeService.convertEntriesToIds(getZip("valid.zip"));
+    void readZipEntries_convertEntriesToUuidsAndOneError() {
+        final var result = executeService.convertEntriesToIds(getZip("invalid.zip"));
 
         var hasError = result.stream().anyMatch(string -> string.contains("Error"));
 
         assertTrue(hasError);
-        assertEquals(7, result.size());
+        assertEquals(6, result.size());
     }
 
     private File getZip(String zipFile) {
