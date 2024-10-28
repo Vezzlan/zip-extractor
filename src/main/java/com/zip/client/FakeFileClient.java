@@ -1,6 +1,6 @@
 package com.zip.client;
 
-import com.zip.exceptions.AirportInfoException;
+import com.zip.exceptions.FileClientException;
 
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -11,9 +11,9 @@ public class FakeFileClient {
         return UUID.randomUUID().toString();
     }
 
-    public UUID getFileId(String fileName) throws AirportInfoException {
+    public UUID getFileId(String fileName) throws FileClientException {
         if (fileName.equals("text.txt")) {
-            throw new AirportInfoException("Invalid file sent: " + fileName);
+            throw new FileClientException("Invalid file sent: " + fileName);
         }
         return UUID.randomUUID();
     }
