@@ -43,7 +43,7 @@ public class KafkaPublisher {
         final var kafkaCommands = ZipFileHandler.withZipFile(file, zipFile ->
                 convertToKafkaCommands(zipFile, zipEntryMap));
 
-        sendToKafka(kafkaCommands);
+        sendCommandsToKafka(kafkaCommands);
 
         return kafkaCommands;
     }
@@ -67,14 +67,14 @@ public class KafkaPublisher {
         final var newFileIdFromWWW = fileClientMock(pythonEntry);
         final var newId = UUID.randomUUID().toString();
 
-        return new KafkaCommand(user, newFileIdFromWWW, newId);
+        return new KafkaCommand(newId, newFileIdFromWWW, user);
     }
 
     private User parseJsonToUser(ZipFile zipFile, ZipEntry jsonEntry) {
         try (InputStream inputStream = zipFile.getInputStream(jsonEntry)) {
             final var jsonStr = new String(inputStream.readAllBytes());
             final var metadata = parseJson(jsonStr);
-            return new User(metadata.id(), UUID.randomUUID().toString(), "kalle", metadata.description());
+            return new User(metadata.id(), UUID.randomUUID().toString(), metadata.name(), metadata.description());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -93,7 +93,7 @@ public class KafkaPublisher {
         }
     }
 
-    private void sendToKafka(List<KafkaCommand> kafkaCommands) {
+    private void sendCommandsToKafka(List<KafkaCommand> kafkaCommands) {
         kafkaCommands.stream()
                 .map(dto -> new User(dto.id(), dto.fileId(), dto.user().name(), dto.user().description()))
                 .forEach(KafkaPublisher::sendToKafka);

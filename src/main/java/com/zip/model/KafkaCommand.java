@@ -1,4 +1,4 @@
 package com.zip.model;
 
-public record KafkaCommand(User user, String fileId, String id) {
+public record KafkaCommand(String id, String fileId, User user) {
 }
