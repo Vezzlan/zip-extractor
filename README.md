@@ -1,1 +1,1 @@
-y
+A project where I test extracting files from a zip and refining the result in various ways. The folder "exceptions" is inspired by Venkat Subramaniam's way of handling exceptions inside a stream.
