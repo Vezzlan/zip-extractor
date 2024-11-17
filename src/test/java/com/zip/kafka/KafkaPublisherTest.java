@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
 import com.zip.services.KafkaPublisher;
-import com.zip.services.ZipService;
+import com.zip.services.zip.ZipExtractor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -22,9 +22,9 @@ class KafkaPublisherTest {
     @BeforeEach
     void setup() {
         ObjectMapper objectMapper = new ObjectMapper();
-        ZipService zipService = new ZipService();
+        ZipExtractor zipExtractor = new ZipExtractor();
         FakeFileClient fileClient = new FakeFileClient();
-        kafkaPublisher = new KafkaPublisher(objectMapper, zipService, fileClient);
+        kafkaPublisher = new KafkaPublisher(objectMapper, zipExtractor, fileClient);
     }
 
     @Test

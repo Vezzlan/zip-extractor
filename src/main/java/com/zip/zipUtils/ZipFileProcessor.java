@@ -1,6 +1,7 @@
 package com.zip.zipUtils;
 
 import java.io.IOException;
+import java.util.function.Function;
 import java.util.zip.ZipFile;
 
 @FunctionalInterface

@@ -5,6 +5,7 @@ import com.zip.exceptions.Failure;
 import com.zip.exceptions.Success;
 import com.zip.exceptions.Try;
 import com.zip.model.ResourceIds;
+import com.zip.services.zip.ZipExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,13 +20,13 @@ public class ExecuteService {
 
     private final FakeFileClient fileClient;
 
-    private final ZipService zipService;
+    private final ZipExtractor zipExtractor;
 
     @Autowired
-    public ExecuteService(KafkaPublisher kafkaPublisher, FakeFileClient fileClient, ZipService zipService) {
+    public ExecuteService(KafkaPublisher kafkaPublisher, FakeFileClient fileClient, ZipExtractor zipExtractor) {
         this.kafkaPublisher = kafkaPublisher;
         this.fileClient = fileClient;
-        this.zipService = zipService;
+        this.zipExtractor = zipExtractor;
     }
 
     public List<ResourceIds> executeFlow(File file) {
@@ -36,7 +37,7 @@ public class ExecuteService {
     }
 
     public List<String> convertEntriesToIds(File file) {
-        final var entries = zipService.getZipEntries(file);
+        final var entries = zipExtractor.getZipEntries(file);
         return getIdFromFileClient(entries).stream()
                 .map(name -> switch (name) {
                     case Success(String result) -> result;

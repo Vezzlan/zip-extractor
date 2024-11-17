@@ -6,6 +6,7 @@ import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
 import com.zip.model.User;
 import com.zip.model.ZipEntryHolder;
+import com.zip.services.zip.ZipExtractor;
 import com.zip.zipUtils.ZipFileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,25 +26,25 @@ public class KafkaPublisher {
 
     private final ObjectMapper objectMapper;
 
-    private final ZipService zipService;
+    private final ZipExtractor zipExtractor;
 
     private final FakeFileClient fileClient;
 
     @Autowired
-    public KafkaPublisher(ObjectMapper objectMapper, ZipService zipService, FakeFileClient fileClient) {
+    public KafkaPublisher(ObjectMapper objectMapper, ZipExtractor zipExtractor, FakeFileClient fileClient) {
         this.objectMapper = objectMapper;
-        this.zipService = zipService;
+        this.zipExtractor = zipExtractor;
         this.fileClient = fileClient;
     }
 
     public List<KafkaCommand> sendCommand(File file) {
-        final var zipEntryMap = zipService.mapZipEntries(file);
+        final var zipEntryMap = zipExtractor.mapZipEntries(file);
 
         if (isJsonMissing(zipEntryMap)) {
             return Collections.emptyList();
         }
 
-        final var kafkaCommands = ZipFileHandler.withZipFile(file, zipFile ->
+        final var kafkaCommands = ZipFileHandler.processZipFile(file, zipFile ->
                 convertToKafkaCommands(zipFile, zipEntryMap));
 
         sendCommandsToKafka(kafkaCommands);

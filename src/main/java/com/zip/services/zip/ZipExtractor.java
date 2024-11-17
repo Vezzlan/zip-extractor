@@ -1,4 +1,4 @@
-package com.zip.services;
+package com.zip.services.zip;
 
 import com.zip.model.ZipEntryHolder;
 import org.springframework.stereotype.Component;
@@ -13,18 +13,18 @@ import java.util.zip.ZipFile;
 import static java.util.stream.Collectors.*;
 
 @Component
-public class ZipService {
+public class ZipExtractor {
 
     private static final String JSON = "json";
 
     private static final String PYTHON = "python";
 
     public Map<String, ZipEntryHolder> mapZipEntries(File file) {
-        return ZipFileHandler.withZipFile(file, this::mapZipEntries);
+        return ZipFileHandler.processZipFile(file, this::mapZipEntries);
     }
 
     public List<String> getZipEntries(File file) {
-        return ZipFileHandler.withZipFile(file, this::getZipEntries);
+        return ZipFileHandler.processZipFile(file, this::getZipEntries);
     }
 
     private List<String> getZipEntries(ZipFile zipFile) {
