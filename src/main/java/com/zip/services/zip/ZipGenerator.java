@@ -19,8 +19,9 @@ public class ZipGenerator {
 
     private final FakeFileClient fileClient;
 
-    public ZipGenerator(ObjectMapper objectMapper, FakeFileClient fileClient) {
-        this.objectMapper = objectMapper;
+    public ZipGenerator(FakeFileClient fileClient) {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
         this.fileClient = fileClient;
     }
 
@@ -30,12 +31,12 @@ public class ZipGenerator {
         final var jsonFileName = String.format("%s.json", user.name());
 
         ZipFileHandler.writeToZipOutputStream(zipOutputStream, zipWriter -> {
-            addResourceToZip(zipWriter, pythonFileName, pythonResource);
-            addJsonToZip(zipWriter, jsonFileName, user);
+            addZipEntry(zipWriter, pythonFileName, pythonResource);
+            addZipEntry(zipWriter, jsonFileName, user);
         });
     }
 
-    private void addResourceToZip(ZipOutputStream zipWriter, String fileName, Resource pythonResource) throws IOException {
+    private void addZipEntry(ZipOutputStream zipWriter, String fileName, Resource pythonResource) throws IOException {
         zipWriter.putNextEntry(new ZipEntry(fileName));
         try (InputStream resource = pythonResource.getInputStream()) {
             resource.transferTo(zipWriter);
@@ -43,14 +44,13 @@ public class ZipGenerator {
         zipWriter.closeEntry();
     }
 
-    private void addJsonToZip(ZipOutputStream zipWriter, String fileName, User user) throws IOException {
+    private void addZipEntry(ZipOutputStream zipWriter, String fileName, User user) throws IOException {
         zipWriter.putNextEntry(new ZipEntry(fileName));
         convertToJson(user, zipWriter);
         zipWriter.closeEntry();
     }
 
     private void convertToJson(User user, ZipOutputStream zipWriter) throws IOException {
-        objectMapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
         objectMapper.writeValue(zipWriter, user);
     }
 

@@ -1,6 +1,6 @@
 package com.zip.services.zip;
 
-import com.zip.model.ZipEntryHolder;
+import com.zip.model.FilePair;
 import org.springframework.stereotype.Component;
 import com.zip.zipUtils.ZipFileHandler;
 
@@ -19,7 +19,7 @@ public class ZipExtractor {
 
     private static final String PYTHON = "python";
 
-    public Map<String, ZipEntryHolder> mapZipEntries(File file) {
+    public Map<String, FilePair> mapZipEntries(File file) {
         return ZipFileHandler.processZipFile(file, this::mapZipEntries);
     }
 
@@ -34,7 +34,7 @@ public class ZipExtractor {
                 .toList();
     }
 
-    private Map<String, ZipEntryHolder> mapZipEntries(ZipFile zipFile) {
+    private Map<String, FilePair> mapZipEntries(ZipFile zipFile) {
         return zipFile.stream()
                 .filter(entry -> !entry.getName().startsWith("__MACOSX"))
                 .filter(this::isJsonOrPython)
@@ -45,7 +45,7 @@ public class ZipExtractor {
                                         this::getFileType,
                                         Function.identity()
                                 ),
-                                map -> new ZipEntryHolder(map.get(JSON), map.get(PYTHON))
+                                map -> new FilePair(map.get(JSON), map.get(PYTHON))
                         ))
                 );
     }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
 import com.zip.model.User;
-import com.zip.model.ZipEntryHolder;
+import com.zip.model.FilePair;
 import com.zip.services.zip.ZipExtractor;
 import com.zip.zipUtils.ZipFileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,37 +52,36 @@ public class KafkaPublisher {
         return kafkaCommands;
     }
 
-    private boolean isJsonMissing(Map<String, ZipEntryHolder> zipEntriesMap) {
+    private boolean isJsonMissing(Map<String, FilePair> zipEntriesMap) {
         return zipEntriesMap.entrySet().stream()
                 .anyMatch(entry -> entry.getValue().json() == null);
     }
 
-    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryHolder> zipEntryMap) {
+    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, FilePair> zipEntryMap) {
         return zipEntryMap.values().stream()
-                .map(zipEntryHolder -> toKafkaCommand(zipFile, zipEntryHolder))
+                .map(filePair -> toKafkaCommand(zipFile, filePair))
                 .toList();
     }
 
-    private KafkaCommand toKafkaCommand(ZipFile zipFile, ZipEntryHolder zipEntryHolder) {
-        final var user = parseJsonToUser(zipFile, zipEntryHolder.json());
-        final var fileId = fileClient.getFileId(zipEntryHolder.python());
+    private KafkaCommand toKafkaCommand(ZipFile zipFile, FilePair filePair) {
+        final var user = parseJsonToUser(zipFile, filePair.json());
+        final var fileId = fileClient.getFileId(filePair.python());
         final var newId = UUID.randomUUID().toString();
         return new KafkaCommand(newId, fileId, user);
     }
 
     private User parseJsonToUser(ZipFile zipFile, ZipEntry jsonEntry) {
         try (InputStream inputStream = zipFile.getInputStream(jsonEntry)) {
-            final var jsonStr = new String(inputStream.readAllBytes());
-            final var metadata = parseJson(jsonStr);
+            final var metadata = parseJson(inputStream);
             return new User(metadata.id(), UUID.randomUUID().toString(), metadata.name(), metadata.description());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private User parseJson(String jsonStr) {
+    private User parseJson(InputStream inputStream) throws IOException {
         try {
-            return objectMapper.readValue(jsonStr, User.class);
+            return objectMapper.readValue(inputStream, User.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
