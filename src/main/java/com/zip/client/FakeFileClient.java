@@ -18,7 +18,7 @@ import java.util.zip.ZipEntry;
 @Component
 public class FakeFileClient {
 
-    @Value("classpath:file1.py")
+    @Value("classpath:file_client_response.py")
     private Resource pythonFile;
 
     public String getFileId(ZipEntry pythonEntry) {

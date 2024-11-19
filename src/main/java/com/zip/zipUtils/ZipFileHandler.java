@@ -7,7 +7,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipFileHandler {
 
     public static <T> T processZipFile(File file, ZipFileProcessor<T> processor) {
-        try (ZipFile zipFile = new ZipFile(file)) {
+        try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ)) {
             return processor.process(zipFile);
         } catch (IOException e) {
             throw new RuntimeException("Error processing zip file", e);

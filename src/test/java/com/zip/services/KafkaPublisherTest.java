@@ -1,9 +1,8 @@
-package com.zip.kafka;
+package com.zip.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
-import com.zip.services.KafkaPublisher;
 import com.zip.services.zip.ZipExtractor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,15 +30,18 @@ class KafkaPublisherTest {
     void whenValidZip_thenCommandsShouldBeUpdatedAndSent() {
         var results = kafkaPublisher.sendCommand(getZip("valid.zip"));
 
-        final var first = resultWithId(results, "1");
-        final var second = resultWithId(results, "2");
+        final var firstKafkaCommand = resultWithId(results, "1");
+        final var secondKafkaCommand = resultWithId(results, "2");
+        final var thirdKafkaCommand = resultWithId(results, "3");
 
         assertAll(
                 () -> assertEquals(3, results.size()),
-                () -> assertEquals("calle", first.user().name()),
-                () -> assertEquals("first file!", first.user().description()),
-                () -> assertEquals("arne", second.user().name()),
-                () -> assertEquals("second file!", second.user().description())
+                () -> assertEquals("calle", firstKafkaCommand.user().name()),
+                () -> assertEquals("first file!", firstKafkaCommand.user().description()),
+                () -> assertEquals("arne", secondKafkaCommand.user().name()),
+                () -> assertEquals("second file!", secondKafkaCommand.user().description()),
+                () -> assertEquals("william", thirdKafkaCommand.user().name()),
+                () -> assertEquals("third file!", thirdKafkaCommand.user().description())
         );
     }
 

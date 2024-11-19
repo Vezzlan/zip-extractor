@@ -1,6 +1,5 @@
-package com.zip.services;
+package com.zip.services.zip;
 
-import com.zip.services.zip.ZipExtractor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -30,7 +29,6 @@ public class ZipExtractorTest {
                 () -> assertNotNull(result.get("file3").json()),
                 () -> assertNotNull(result.get("file3").python())
         );
-
     }
 
     @Test

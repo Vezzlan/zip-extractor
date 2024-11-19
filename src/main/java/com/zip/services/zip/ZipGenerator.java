@@ -46,11 +46,17 @@ public class ZipGenerator {
 
     private void addZipEntry(ZipOutputStream zipWriter, String fileName, User user) throws IOException {
         zipWriter.putNextEntry(new ZipEntry(fileName));
-        convertToJson(user, zipWriter);
+        convertToJson(zipWriter, user);
         zipWriter.closeEntry();
     }
 
-    private void convertToJson(User user, ZipOutputStream zipWriter) throws IOException {
+    private void addZipEntryAsBytes(ZipOutputStream zipWriter, String fileName, User user) throws IOException {
+        zipWriter.putNextEntry(new ZipEntry(fileName));
+        zipWriter.write(objectMapper.writeValueAsBytes(user));
+        zipWriter.closeEntry();
+    }
+
+    private void convertToJson(ZipOutputStream zipWriter, User user) throws IOException {
         objectMapper.writeValue(zipWriter, user);
     }
 
