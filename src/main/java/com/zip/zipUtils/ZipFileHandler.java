@@ -6,7 +6,7 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipFileHandler {
 
-    public static <T> T processZipFile(File file, ZipFileReader<T> reader) {
+    public static <T> T readZipFile(File file, ZipFileReader<T> reader) {
         try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ)) {
             return reader.read(zipFile);
         } catch (IOException e) {

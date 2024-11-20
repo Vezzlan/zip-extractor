@@ -44,7 +44,7 @@ public class KafkaPublisher {
             return Collections.emptyList();
         }
 
-        final var kafkaCommands = ZipFileHandler.processZipFile(file, zipFile ->
+        final var kafkaCommands = ZipFileHandler.readZipFile(file, zipFile ->
                 convertToKafkaCommands(zipFile, zipEntryMap));
 
         sendCommandsToKafka(kafkaCommands);

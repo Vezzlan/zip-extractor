@@ -20,11 +20,11 @@ public class ZipExtractor {
     private static final String PYTHON = "python";
 
     public Map<String, FilePair> mapEntriesFromZip(File file) {
-        return ZipFileHandler.processZipFile(file, this::mapZipEntries);
+        return ZipFileHandler.readZipFile(file, this::mapZipEntries);
     }
 
     public List<String> listEntriesFromZip(File file) {
-        return ZipFileHandler.processZipFile(file, this::getZipEntries);
+        return ZipFileHandler.readZipFile(file, this::getZipEntries);
     }
 
     private List<String> getZipEntries(ZipFile zipFile) {
