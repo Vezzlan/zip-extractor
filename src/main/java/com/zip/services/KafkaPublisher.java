@@ -38,7 +38,7 @@ public class KafkaPublisher {
     }
 
     public List<KafkaCommand> sendCommand(File file) {
-        final var zipEntryMap = zipExtractor.mapZipEntries(file);
+        final var zipEntryMap = zipExtractor.mapEntriesFromZip(file);
 
         if (isJsonMissing(zipEntryMap)) {
             return Collections.emptyList();

@@ -20,7 +20,7 @@ public class ZipExtractorTest {
 
     @Test
     public void whenZipContainsPairOfJsonAndPythonFiles_AllEntriesShouldBeMapped() {
-        final var result = zipExtractor.mapZipEntries(getZip("valid.zip"));
+        final var result = zipExtractor.mapEntriesFromZip(getZip("valid.zip"));
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),
                 () -> assertNotNull(result.get("file1").python()),
@@ -33,7 +33,7 @@ public class ZipExtractorTest {
 
     @Test
     public void whenJsonFileIsMissing_mapShouldHaveEmptyJsonEntry() {
-        final var result = zipExtractor.mapZipEntries(getZip("invalid.zip"));
+        final var result = zipExtractor.mapEntriesFromZip(getZip("invalid.zip"));
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),
                 () -> assertNotNull(result.get("file1").python()),
