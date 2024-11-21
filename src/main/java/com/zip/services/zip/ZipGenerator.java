@@ -25,39 +25,39 @@ public class ZipGenerator {
         this.fileClient = fileClient;
     }
 
-    public void generate(OutputStream zipOutputStream, User user) {
+    public void generate(OutputStream outputStream, User user) {
         final var pythonResource = fileClient.downloadPythonFile(user.fileId());
         final var pythonFileName = String.format("%s.py", user.name());
         final var jsonFileName = String.format("%s.json", user.name());
 
-        ZipFileHandler.writeToZipOutputStream(zipOutputStream, zipWriter -> {
-            addZipEntry(zipWriter, pythonFileName, pythonResource);
-            addZipEntry(zipWriter, jsonFileName, user);
+        ZipFileHandler.writeToOutputStream(outputStream, zipOutputStream -> {
+            addZipEntry(zipOutputStream, pythonFileName, pythonResource);
+            addZipEntry(zipOutputStream, jsonFileName, user);
         });
     }
 
-    private void addZipEntry(ZipOutputStream zipWriter, String fileName, Resource pythonResource) throws IOException {
-        zipWriter.putNextEntry(new ZipEntry(fileName));
+    private void addZipEntry(ZipOutputStream zipOutputStream, String fileName, Resource pythonResource) throws IOException {
+        zipOutputStream.putNextEntry(new ZipEntry(fileName));
         try (InputStream resource = pythonResource.getInputStream()) {
-            resource.transferTo(zipWriter);
+            resource.transferTo(zipOutputStream);
         }
-        zipWriter.closeEntry();
+        zipOutputStream.closeEntry();
     }
 
-    private void addZipEntry(ZipOutputStream zipWriter, String fileName, User user) throws IOException {
-        zipWriter.putNextEntry(new ZipEntry(fileName));
-        convertToJson(zipWriter, user);
-        zipWriter.closeEntry();
+    private void addZipEntry(ZipOutputStream zipOutputStream, String fileName, User user) throws IOException {
+        zipOutputStream.putNextEntry(new ZipEntry(fileName));
+        convertToJson(zipOutputStream, user);
+        zipOutputStream.closeEntry();
     }
 
-    private void addZipEntryAsBytes(ZipOutputStream zipWriter, String fileName, User user) throws IOException {
-        zipWriter.putNextEntry(new ZipEntry(fileName));
-        zipWriter.write(objectMapper.writeValueAsBytes(user));
-        zipWriter.closeEntry();
+    private void addZipEntryAsBytes(ZipOutputStream zipOutputStream, String fileName, User user) throws IOException {
+        zipOutputStream.putNextEntry(new ZipEntry(fileName));
+        zipOutputStream.write(objectMapper.writeValueAsBytes(user));
+        zipOutputStream.closeEntry();
     }
 
-    private void convertToJson(ZipOutputStream zipWriter, User user) throws IOException {
-        objectMapper.writeValue(zipWriter, user);
+    private void convertToJson(ZipOutputStream zipOutputStream, User user) throws IOException {
+        objectMapper.writeValue(zipOutputStream, user);
     }
 
 }

@@ -27,7 +27,7 @@ public class ZipController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=%s.zip".formatted(user.name()))
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(outputZip -> zipGenerator.generate(outputZip, user));
+                .body(outputStream -> zipGenerator.generate(outputStream, user));
     }
 
 }

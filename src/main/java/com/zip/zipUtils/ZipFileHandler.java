@@ -14,7 +14,7 @@ public class ZipFileHandler {
         }
     }
 
-    public static void writeToZipOutputStream(OutputStream outputStream, ZipFileWriter writer) {
+    public static void writeToOutputStream(OutputStream outputStream, ZipFileWriter writer) {
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
             writer.write(zipOutputStream);
         } catch (IOException e) {
