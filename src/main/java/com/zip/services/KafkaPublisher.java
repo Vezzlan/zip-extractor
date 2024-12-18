@@ -59,11 +59,11 @@ public class KafkaPublisher {
 
     private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryPair> zipEntryMap) {
         return zipEntryMap.values().stream()
-                .map(zipEntryPair -> toKafkaCommand(zipFile, zipEntryPair))
+                .map(zipEntryPair -> createKafkaCommand(zipFile, zipEntryPair))
                 .toList();
     }
 
-    private KafkaCommand toKafkaCommand(ZipFile zipFile, ZipEntryPair zipEntryPair) {
+    private KafkaCommand createKafkaCommand(ZipFile zipFile, ZipEntryPair zipEntryPair) {
         final var user = parseJsonToUser(zipFile, zipEntryPair.json());
         final var fileId = fileClient.getFileId(zipEntryPair.python());
         final var newId = UUID.randomUUID().toString();
