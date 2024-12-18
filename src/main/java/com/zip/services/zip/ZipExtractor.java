@@ -1,6 +1,6 @@
 package com.zip.services.zip;
 
-import com.zip.model.FilePair;
+import com.zip.model.ZipEntryPair;
 import org.springframework.stereotype.Component;
 import com.zip.zipUtils.ZipFileHandler;
 
@@ -19,7 +19,7 @@ public class ZipExtractor {
 
     private static final String PYTHON = "python";
 
-    public Map<String, FilePair> mapEntriesFromZip(File file) {
+    public Map<String, ZipEntryPair> mapEntriesFromZip(File file) {
         return ZipFileHandler.readZipFile(file, this::mapZipEntries);
     }
 
@@ -29,14 +29,14 @@ public class ZipExtractor {
 
     private List<String> getZipEntries(ZipFile zipFile) {
         return zipFile.stream()
+                .filter(entry -> !isMacOsResource(entry))
                 .map(ZipEntry::getName)
-                .filter(name -> !name.startsWith("__MACOSX"))
                 .toList();
     }
 
-    private Map<String, FilePair> mapZipEntries(ZipFile zipFile) {
+    private Map<String, ZipEntryPair> mapZipEntries(ZipFile zipFile) {
         return zipFile.stream()
-                .filter(entry -> !entry.getName().startsWith("__MACOSX"))
+                .filter(entry -> !isMacOsResource(entry))
                 .filter(this::isJsonOrPython)
                 .collect(groupingBy(
                         this::getFileName,
@@ -45,9 +45,13 @@ public class ZipExtractor {
                                         this::getFileType,
                                         Function.identity()
                                 ),
-                                map -> new FilePair(map.get(JSON), map.get(PYTHON))
+                                map -> new ZipEntryPair(map.get(JSON), map.get(PYTHON))
                         ))
                 );
+    }
+
+    private boolean isMacOsResource(ZipEntry entry) {
+        return entry.getName().startsWith("__MACOSX");
     }
 
     private boolean isJsonOrPython(ZipEntry zipEntry) {
@@ -55,7 +59,7 @@ public class ZipExtractor {
     }
 
     private String getFileName(ZipEntry zipEntry) {
-        return  zipEntry.getName().substring(0, zipEntry.getName().indexOf("."));
+        return zipEntry.getName().substring(0, zipEntry.getName().indexOf("."));
     }
 
     private String getFileType(ZipEntry entry) {

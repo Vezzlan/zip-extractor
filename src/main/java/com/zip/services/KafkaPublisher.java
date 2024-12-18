@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
 import com.zip.model.User;
-import com.zip.model.FilePair;
+import com.zip.model.ZipEntryPair;
 import com.zip.services.zip.ZipExtractor;
 import com.zip.zipUtils.ZipFileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,20 +52,20 @@ public class KafkaPublisher {
         return kafkaCommands;
     }
 
-    private boolean isJsonMissing(Map<String, FilePair> zipEntriesMap) {
+    private boolean isJsonMissing(Map<String, ZipEntryPair> zipEntriesMap) {
         return zipEntriesMap.entrySet().stream()
                 .anyMatch(entry -> entry.getValue().json() == null);
     }
 
-    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, FilePair> zipEntryMap) {
+    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryPair> zipEntryMap) {
         return zipEntryMap.values().stream()
-                .map(filePair -> toKafkaCommand(zipFile, filePair))
+                .map(zipEntryPair -> toKafkaCommand(zipFile, zipEntryPair))
                 .toList();
     }
 
-    private KafkaCommand toKafkaCommand(ZipFile zipFile, FilePair filePair) {
-        final var user = parseJsonToUser(zipFile, filePair.json());
-        final var fileId = fileClient.getFileId(filePair.python());
+    private KafkaCommand toKafkaCommand(ZipFile zipFile, ZipEntryPair zipEntryPair) {
+        final var user = parseJsonToUser(zipFile, zipEntryPair.json());
+        final var fileId = fileClient.getFileId(zipEntryPair.python());
         final var newId = UUID.randomUUID().toString();
         return new KafkaCommand(newId, fileId, user);
     }
