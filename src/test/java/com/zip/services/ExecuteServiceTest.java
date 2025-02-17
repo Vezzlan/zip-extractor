@@ -26,7 +26,7 @@ class ExecuteServiceTest {
 
     @Test
     void whenReadingZipEntries_convertEntriesToUuidsAndOneError() {
-        final var result = executeService.convertEntriesToIds(getZip("invalid.zip"));
+        final var result = executeService.convertEntriesToIds(getZip());
 
         var hasError = result.stream().anyMatch(string -> string.contains("Error"));
 
@@ -34,9 +34,9 @@ class ExecuteServiceTest {
         assertEquals(6, result.size());
     }
 
-    private File getZip(String zipFile) {
+    private File getZip() {
         try {
-            return new ClassPathResource(zipFile).getFile();
+            return new ClassPathResource("invalid.zip").getFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
