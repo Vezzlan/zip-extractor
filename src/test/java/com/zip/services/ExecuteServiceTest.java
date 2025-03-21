@@ -1,7 +1,7 @@
 package com.zip.services;
 
 import com.zip.client.FakeFileClient;
-import com.zip.services.zip.ZipExtractor;
+import com.zip.services.zip.ZipContentProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -18,10 +18,10 @@ class ExecuteServiceTest {
 
     @BeforeEach
     void setup() {
-        ZipExtractor zipExtractor = new ZipExtractor();
+        ZipContentProcessor zipContentProcessor = new ZipContentProcessor();
         FakeFileClient fakeFileClient = new FakeFileClient();
-        KafkaPublisher kafkaPublisher = mock(KafkaPublisher.class);
-        executeService = new ExecuteService(kafkaPublisher, fakeFileClient, zipExtractor);
+        KafkaCommandService kafkaCommandService = mock(KafkaCommandService.class);
+        executeService = new ExecuteService(kafkaCommandService, fakeFileClient, zipContentProcessor);
     }
 
     @Test

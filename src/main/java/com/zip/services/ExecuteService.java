@@ -4,8 +4,10 @@ import com.zip.client.FakeFileClient;
 import com.zip.exceptions.Failure;
 import com.zip.exceptions.Success;
 import com.zip.exceptions.Try;
+import com.zip.model.KafkaCommand;
 import com.zip.model.ResourceIds;
-import com.zip.services.zip.ZipExtractor;
+import com.zip.model.User;
+import com.zip.services.zip.ZipContentProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,28 +18,41 @@ import java.util.UUID;
 @Component
 public class ExecuteService {
 
-    private final KafkaPublisher kafkaPublisher;
+    private final KafkaCommandService kafkaCommandService;
 
     private final FakeFileClient fileClient;
 
-    private final ZipExtractor zipExtractor;
+    private final ZipContentProcessor zipContentProcessor;
 
     @Autowired
-    public ExecuteService(KafkaPublisher kafkaPublisher, FakeFileClient fileClient, ZipExtractor zipExtractor) {
-        this.kafkaPublisher = kafkaPublisher;
+    public ExecuteService(KafkaCommandService kafkaCommandService, FakeFileClient fileClient, ZipContentProcessor zipContentProcessor) {
+        this.kafkaCommandService = kafkaCommandService;
         this.fileClient = fileClient;
-        this.zipExtractor = zipExtractor;
+        this.zipContentProcessor = zipContentProcessor;
     }
 
     public List<ResourceIds> executeFlow(File file) {
-        final var kafkaCommands = kafkaPublisher.sendCommand(file);
+        final var kafkaCommands = kafkaCommandService.createKafkaCommands(file);
+
+        sendCommandsToKafka(kafkaCommands);
+
         return kafkaCommands.stream()
                 .map(command -> new ResourceIds(command.id(), command.fileId()))
                 .toList();
     }
 
+    private void sendCommandsToKafka(List<KafkaCommand> kafkaCommands) {
+        kafkaCommands.stream()
+                .map(dto -> new User(dto.id(), dto.fileId(), dto.user().name(), dto.user().description()))
+                .forEach(this::sendToKafka);
+    }
+
+    private void sendToKafka(User sendCommand) {
+        System.out.println(sendCommand);
+    }
+
     public List<String> convertEntriesToIds(File file) {
-        final var entries = zipExtractor.listEntriesFromZip(file);
+        final var entries = zipContentProcessor.listZipFileEntries(file);
         return getIdFromFileClient(entries).stream()
                 .map(name -> switch (name) {
                     case Success(String result) -> result;

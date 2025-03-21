@@ -6,7 +6,7 @@ import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
 import com.zip.model.User;
 import com.zip.model.ZipEntryPair;
-import com.zip.services.zip.ZipExtractor;
+import com.zip.services.zip.ZipContentProcessor;
 import com.zip.zipUtils.ZipFileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,34 +22,29 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 @Component
-public class KafkaPublisher {
+public class KafkaCommandService {
 
     private final ObjectMapper objectMapper;
 
-    private final ZipExtractor zipExtractor;
+    private final ZipContentProcessor zipContentProcessor;
 
     private final FakeFileClient fileClient;
 
     @Autowired
-    public KafkaPublisher(ObjectMapper objectMapper, ZipExtractor zipExtractor, FakeFileClient fileClient) {
+    public KafkaCommandService(ObjectMapper objectMapper, ZipContentProcessor zipContentProcessor, FakeFileClient fileClient) {
         this.objectMapper = objectMapper;
-        this.zipExtractor = zipExtractor;
+        this.zipContentProcessor = zipContentProcessor;
         this.fileClient = fileClient;
     }
 
-    public List<KafkaCommand> sendCommand(File file) {
-        final var zipEntryMap = zipExtractor.mapEntriesFromZip(file);
+    public List<KafkaCommand> createKafkaCommands(File file) {
+        final var zipEntryMap = zipContentProcessor.mapZipFileEntries(file);
 
         if (isJsonMissing(zipEntryMap)) {
             return Collections.emptyList();
         }
 
-        final var kafkaCommands = ZipFileHandler.readZipFile(file, zipFile ->
-                convertToKafkaCommands(zipFile, zipEntryMap));
-
-        sendCommandsToKafka(kafkaCommands);
-
-        return kafkaCommands;
+        return ZipFileHandler.openZipFile(file, zipFile -> convertToKafkaCommands(zipFile, zipEntryMap));
     }
 
     private boolean isJsonMissing(Map<String, ZipEntryPair> zipEntriesMap) {
@@ -64,7 +59,8 @@ public class KafkaPublisher {
     }
 
     private KafkaCommand createKafkaCommand(ZipFile zipFile, ZipEntryPair zipEntryPair) {
-        final var user = parseJsonToUser(zipFile, zipEntryPair.json());
+        final var oldUser = parseJsonToUser(zipFile, zipEntryPair.json());
+        final var user = new User(oldUser.id(), UUID.randomUUID().toString(), oldUser.name(), oldUser.description());
         final var fileId = fileClient.getFileId(zipEntryPair.python());
         final var newId = UUID.randomUUID().toString();
         return new KafkaCommand(newId, fileId, user);
@@ -72,8 +68,7 @@ public class KafkaPublisher {
 
     private User parseJsonToUser(ZipFile zipFile, ZipEntry jsonEntry) {
         try (InputStream inputStream = zipFile.getInputStream(jsonEntry)) {
-            final var metadata = parseJson(inputStream);
-            return new User(metadata.id(), UUID.randomUUID().toString(), metadata.name(), metadata.description());
+            return parseJson(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -85,16 +80,6 @@ public class KafkaPublisher {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void sendCommandsToKafka(List<KafkaCommand> kafkaCommands) {
-        kafkaCommands.stream()
-                .map(dto -> new User(dto.id(), dto.fileId(), dto.user().name(), dto.user().description()))
-                .forEach(KafkaPublisher::sendToKafka);
-    }
-
-    private static void sendToKafka(User sendCommand) {
-        //Send to Kafka
     }
 
 }

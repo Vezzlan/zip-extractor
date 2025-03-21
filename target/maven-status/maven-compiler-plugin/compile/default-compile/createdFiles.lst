@@ -1,1 +1,2 @@
-com/zip/services/KafkaPublisher.class
+com/zip/services/KafkaCommandService.class
+com/zip/services/zip/ZipContentProcessor.class

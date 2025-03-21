@@ -13,28 +13,28 @@ import java.util.zip.ZipFile;
 import static java.util.stream.Collectors.*;
 
 @Component
-public class ZipExtractor {
+public class ZipContentProcessor {
 
     private static final String JSON = "json";
 
     private static final String PYTHON = "python";
 
-    public Map<String, ZipEntryPair> mapEntriesFromZip(File file) {
-        return ZipFileHandler.readZipFile(file, this::mapZipEntries);
+    public Map<String, ZipEntryPair> mapZipFileEntries(File file) {
+        return ZipFileHandler.openZipFile(file, this::mapEntries);
     }
 
-    public List<String> listEntriesFromZip(File file) {
-        return ZipFileHandler.readZipFile(file, this::getZipEntries);
+    public List<String> listZipFileEntries(File file) {
+        return ZipFileHandler.openZipFile(file, this::listEntries);
     }
 
-    private List<String> getZipEntries(ZipFile zipFile) {
+    private List<String> listEntries(ZipFile zipFile) {
         return zipFile.stream()
                 .filter(entry -> !isMacOsResource(entry))
                 .map(ZipEntry::getName)
                 .toList();
     }
 
-    private Map<String, ZipEntryPair> mapZipEntries(ZipFile zipFile) {
+    private Map<String, ZipEntryPair> mapEntries(ZipFile zipFile) {
         return zipFile.stream()
                 .filter(entry -> !isMacOsResource(entry))
                 .filter(this::isJsonOrPython)

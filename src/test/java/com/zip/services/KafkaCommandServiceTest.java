@@ -3,7 +3,7 @@ package com.zip.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
-import com.zip.services.zip.ZipExtractor;
+import com.zip.services.zip.ZipContentProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -14,21 +14,21 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class KafkaPublisherTest {
+class KafkaCommandServiceTest {
 
-    private KafkaPublisher kafkaPublisher;
+    private KafkaCommandService kafkaCommandService;
 
     @BeforeEach
     void setup() {
         ObjectMapper objectMapper = new ObjectMapper();
-        ZipExtractor zipExtractor = new ZipExtractor();
+        ZipContentProcessor zipContentProcessor = new ZipContentProcessor();
         FakeFileClient fileClient = new FakeFileClient();
-        kafkaPublisher = new KafkaPublisher(objectMapper, zipExtractor, fileClient);
+        kafkaCommandService = new KafkaCommandService(objectMapper, zipContentProcessor, fileClient);
     }
 
     @Test
     void whenValidZip_thenCommandsShouldBeUpdatedAndSent() {
-        var results = kafkaPublisher.sendCommand(getZip("valid.zip"));
+        var results = kafkaCommandService.createKafkaCommands(getZip("valid.zip"));
 
         final var firstKafkaCommand = resultWithId(results, "1");
         final var secondKafkaCommand = resultWithId(results, "2");
@@ -47,7 +47,7 @@ class KafkaPublisherTest {
 
     @Test
     void whenJsonFileIsMissingInZip_shouldReturnEmptyListOfKafkaCommands() {
-        var results = kafkaPublisher.sendCommand(getZip("invalid.zip"));
+        var results = kafkaCommandService.createKafkaCommands(getZip("invalid.zip"));
         assertEquals(0, results.size());
     }
 
