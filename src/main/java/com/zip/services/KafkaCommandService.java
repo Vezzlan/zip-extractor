@@ -54,10 +54,8 @@ public class KafkaCommandService {
     }
 
     private boolean hasMissingFiles(Map<String, ZipEntryPair> zipEntriesMap) {
-        Predicate<ZipEntryPair> isJsonMissing = (pair) -> isNull(pair.json());
-        Predicate<ZipEntryPair> isPythonMissing = (pair) -> isNull(pair.python());
         return zipEntriesMap.values().stream()
-                .anyMatch(isJsonMissing.or(isPythonMissing));
+                .anyMatch(pair -> isNull(pair.json()) || isNull(pair.python()));
     }
 
     private KafkaCommand createKafkaCommand(ZipFile zipFile, ZipEntryPair zipEntryPair) {
