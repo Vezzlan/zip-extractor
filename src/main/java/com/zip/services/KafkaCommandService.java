@@ -15,8 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static java.util.Objects.isNull;
 
 @Component
 public class KafkaCommandService {
@@ -42,7 +45,7 @@ public class KafkaCommandService {
     }
 
     private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryPair> zipEntryMap) {
-        if (isJsonMissing(zipEntryMap)) {
+        if (hasMissingFiles(zipEntryMap)) {
             return Collections.emptyList();
         }
         return zipEntryMap.values().stream()
@@ -50,10 +53,11 @@ public class KafkaCommandService {
                 .toList();
     }
 
-    private boolean isJsonMissing(Map<String, ZipEntryPair> zipEntriesMap) {
+    private boolean hasMissingFiles(Map<String, ZipEntryPair> zipEntriesMap) {
+        Predicate<ZipEntryPair> isJsonMissing = (pair) -> isNull(pair.json());
+        Predicate<ZipEntryPair> isPythonMissing = (pair) -> isNull(pair.python());
         return zipEntriesMap.values().stream()
-                .map(ZipEntryPair::json)
-                .anyMatch(Objects::isNull);
+                .anyMatch(isJsonMissing.or(isPythonMissing));
     }
 
     private KafkaCommand createKafkaCommand(ZipFile zipFile, ZipEntryPair zipEntryPair) {

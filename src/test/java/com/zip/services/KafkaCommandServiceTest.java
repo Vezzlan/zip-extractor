@@ -47,7 +47,7 @@ class KafkaCommandServiceTest {
 
     @Test
     void whenJsonFileIsMissingInZip_shouldReturnEmptyListOfKafkaCommands() {
-        var results = kafkaCommandService.createKafkaCommands(getZip("invalid.zip"));
+        var results = kafkaCommandService.createKafkaCommands(getZip("missing_json.zip"));
         assertEquals(0, results.size());
     }
 
@@ -56,6 +56,12 @@ class KafkaCommandServiceTest {
                 .filter(command -> id.equals(command.user().id()))
                 .findAny()
                 .orElseThrow();
+    }
+
+    @Test
+    void whenPythonFileIsMissingInZip_shouldReturnEmptyListOfKafkaCommands() {
+        var results = kafkaCommandService.createKafkaCommands(getZip("missing_python.zip"));
+        assertEquals(0, results.size());
     }
 
     private File getZip(String zipFile) {

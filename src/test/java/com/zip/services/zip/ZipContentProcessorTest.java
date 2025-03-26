@@ -36,7 +36,7 @@ public class ZipContentProcessorTest {
 
     @Test
     public void whenJsonFileIsMissing_mapShouldHaveEmptyJsonEntry() {
-        final var file = getZip("invalid.zip");
+        final var file = getZip("missing_json.zip");
         final var result = ZipFileHandler.openZipFile(file, zipFile -> zipContentProcessor.mapZipEntriesToFilePairs(zipFile));
 
         assertAll(

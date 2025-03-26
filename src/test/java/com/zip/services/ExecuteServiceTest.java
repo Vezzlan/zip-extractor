@@ -36,7 +36,7 @@ class ExecuteServiceTest {
 
     private File getZip() {
         try {
-            return new ClassPathResource("invalid.zip").getFile();
+            return new ClassPathResource("missing_json.zip").getFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
