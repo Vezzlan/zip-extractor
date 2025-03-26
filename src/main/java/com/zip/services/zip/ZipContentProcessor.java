@@ -2,9 +2,7 @@ package com.zip.services.zip;
 
 import com.zip.model.ZipEntryPair;
 import org.springframework.stereotype.Component;
-import com.zip.zipUtils.ZipFileHandler;
 
-import java.io.File;
 import java.util.*;
 import java.util.function.Function;
 import java.util.zip.ZipEntry;
@@ -19,7 +17,7 @@ public class ZipContentProcessor {
 
     private static final String PYTHON = "python";
 
-    public Map<String, ZipEntryPair> mapEntries(ZipFile zipFile) {
+    public Map<String, ZipEntryPair> mapZipEntries(ZipFile zipFile) {
         return zipFile.stream()
                 .filter(entry -> !isMacOsResource(entry))
                 .filter(this::isJsonOrPython)
@@ -35,7 +33,7 @@ public class ZipContentProcessor {
                 );
     }
 
-    public List<String> listEntries(ZipFile zipFile) {
+    public List<String> listZipEntries(ZipFile zipFile) {
         return zipFile.stream()
                 .filter(entry -> !isMacOsResource(entry))
                 .map(ZipEntry::getName)
