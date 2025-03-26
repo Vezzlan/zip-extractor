@@ -22,7 +22,7 @@ public class ZipContentProcessorTest {
     @Test
     public void whenZipContainsPairOfJsonAndPythonFiles_AllEntriesShouldBeMapped() {
         final var file = getZip("valid.zip");
-        final var result = ZipFileHandler.openZipFile(file, zipFile -> zipContentProcessor.mapZipEntries(zipFile));
+        final var result = ZipFileHandler.openZipFile(file, zipFile -> zipContentProcessor.mapZipEntriesToFilePairs(zipFile));
 
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),
@@ -37,7 +37,7 @@ public class ZipContentProcessorTest {
     @Test
     public void whenJsonFileIsMissing_mapShouldHaveEmptyJsonEntry() {
         final var file = getZip("invalid.zip");
-        final var result = ZipFileHandler.openZipFile(file, zipFile -> zipContentProcessor.mapZipEntries(zipFile));
+        final var result = ZipFileHandler.openZipFile(file, zipFile -> zipContentProcessor.mapZipEntriesToFilePairs(zipFile));
 
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),

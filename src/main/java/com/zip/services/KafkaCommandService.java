@@ -36,7 +36,7 @@ public class KafkaCommandService {
 
     public List<KafkaCommand> createKafkaCommands(File file) {
         return ZipFileHandler.openZipFile(file, zipFile -> {
-            final var filePairsMap = zipContentProcessor.mapZipEntries(zipFile);
+            final var filePairsMap = zipContentProcessor.mapZipEntriesToFilePairs(zipFile);
             return convertToKafkaCommands(zipFile, filePairsMap);
         });
     }

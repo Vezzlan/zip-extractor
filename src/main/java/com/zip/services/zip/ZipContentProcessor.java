@@ -17,7 +17,7 @@ public class ZipContentProcessor {
 
     private static final String PYTHON = "python";
 
-    public Map<String, ZipEntryPair> mapZipEntries(ZipFile zipFile) {
+    public Map<String, ZipEntryPair> mapZipEntriesToFilePairs(ZipFile zipFile) {
         return zipFile.stream()
                 .filter(entry -> !isMacOsResource(entry))
                 .filter(this::isJsonOrPython)
