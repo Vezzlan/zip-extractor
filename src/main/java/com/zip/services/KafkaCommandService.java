@@ -38,24 +38,24 @@ public class KafkaCommandService {
     }
 
     public List<KafkaCommand> createKafkaCommands(File file) {
-        final var zipEntryMap = zipContentProcessor.mapZipFileEntries(file);
+        return ZipFileHandler.openZipFile(file, zipFile -> {
+            final var mappedFilePairs = zipContentProcessor.mapEntries(zipFile);
+            return convertToKafkaCommands(zipFile, mappedFilePairs);
+        });
+    }
 
+    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryPair> zipEntryMap) {
         if (isJsonMissing(zipEntryMap)) {
             return Collections.emptyList();
         }
-
-        return ZipFileHandler.openZipFile(file, zipFile -> convertToKafkaCommands(zipFile, zipEntryMap));
+        return zipEntryMap.values().stream()
+                .map(zipEntryPair -> createKafkaCommand(zipFile, zipEntryPair))
+                .toList();
     }
 
     private boolean isJsonMissing(Map<String, ZipEntryPair> zipEntriesMap) {
         return zipEntriesMap.entrySet().stream()
                 .anyMatch(entry -> entry.getValue().json() == null);
-    }
-
-    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryPair> zipEntryMap) {
-        return zipEntryMap.values().stream()
-                .map(zipEntryPair -> createKafkaCommand(zipFile, zipEntryPair))
-                .toList();
     }
 
     private KafkaCommand createKafkaCommand(ZipFile zipFile, ZipEntryPair zipEntryPair) {

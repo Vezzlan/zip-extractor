@@ -19,22 +19,7 @@ public class ZipContentProcessor {
 
     private static final String PYTHON = "python";
 
-    public Map<String, ZipEntryPair> mapZipFileEntries(File file) {
-        return ZipFileHandler.openZipFile(file, this::mapEntries);
-    }
-
-    public List<String> listZipFileEntries(File file) {
-        return ZipFileHandler.openZipFile(file, this::listEntries);
-    }
-
-    private List<String> listEntries(ZipFile zipFile) {
-        return zipFile.stream()
-                .filter(entry -> !isMacOsResource(entry))
-                .map(ZipEntry::getName)
-                .toList();
-    }
-
-    private Map<String, ZipEntryPair> mapEntries(ZipFile zipFile) {
+    public Map<String, ZipEntryPair> mapEntries(ZipFile zipFile) {
         return zipFile.stream()
                 .filter(entry -> !isMacOsResource(entry))
                 .filter(this::isJsonOrPython)
@@ -48,6 +33,13 @@ public class ZipContentProcessor {
                                 map -> new ZipEntryPair(map.get(JSON), map.get(PYTHON))
                         ))
                 );
+    }
+
+    public List<String> listEntries(ZipFile zipFile) {
+        return zipFile.stream()
+                .filter(entry -> !isMacOsResource(entry))
+                .map(ZipEntry::getName)
+                .toList();
     }
 
     private boolean isMacOsResource(ZipEntry entry) {

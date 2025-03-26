@@ -8,6 +8,7 @@ import com.zip.model.KafkaCommand;
 import com.zip.model.ResourceIds;
 import com.zip.model.User;
 import com.zip.services.zip.ZipContentProcessor;
+import com.zip.zipUtils.ZipFileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +53,7 @@ public class ExecuteService {
     }
 
     public List<String> convertEntriesToIds(File file) {
-        final var entries = zipContentProcessor.listZipFileEntries(file);
+        final var entries = ZipFileHandler.openZipFile(file, zipContentProcessor::listEntries);
         return getIdFromFileClient(entries).stream()
                 .map(name -> switch (name) {
                     case Success(String result) -> result;
