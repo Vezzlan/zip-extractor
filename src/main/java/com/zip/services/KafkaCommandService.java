@@ -14,10 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -54,8 +51,9 @@ public class KafkaCommandService {
     }
 
     private boolean isJsonMissing(Map<String, ZipEntryPair> zipEntriesMap) {
-        return zipEntriesMap.entrySet().stream()
-                .anyMatch(entry -> entry.getValue().json() == null);
+        return zipEntriesMap.values().stream()
+                .map(ZipEntryPair::json)
+                .anyMatch(Objects::isNull);
     }
 
     private KafkaCommand createKafkaCommand(ZipFile zipFile, ZipEntryPair zipEntryPair) {
