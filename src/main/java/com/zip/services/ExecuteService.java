@@ -65,7 +65,7 @@ public class ExecuteService {
     private List<Try<String>> getIdFromFileClient(List<String> fileNames) {
         return fileNames.stream()
                 .map(code -> Try.of(() -> fileClient.getFileId(code)))
-                .map(uuid -> uuid.map(UUID::toString))
+                .map(try -> try.map(UUID::toString))
                 .toList();
     }
 
