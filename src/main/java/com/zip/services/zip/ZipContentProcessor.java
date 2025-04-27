@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -19,7 +20,7 @@ public class ZipContentProcessor {
 
     public Map<String, ZipEntryPair> mapZipEntriesToFilePairs(ZipFile zipFile) {
         return zipFile.stream()
-                .filter(entry -> !isMacOsResource(entry))
+                .filter(isMacOsResource().negate())
                 .filter(this::isJsonOrPython)
                 .collect(groupingBy(
                         this::getFileName,
@@ -35,13 +36,13 @@ public class ZipContentProcessor {
 
     public List<String> listZipEntries(ZipFile zipFile) {
         return zipFile.stream()
-                .filter(entry -> !isMacOsResource(entry))
+                .filter(isMacOsResource().negate())
                 .map(ZipEntry::getName)
                 .toList();
     }
 
-    private boolean isMacOsResource(ZipEntry entry) {
-        return entry.getName().startsWith("__MACOSX");
+    private Predicate<ZipEntry> isMacOsResource() {
+        return (zipEntry) -> zipEntry.getName().startsWith("__MACOSX");
     }
 
     private boolean isJsonOrPython(ZipEntry zipEntry) {
