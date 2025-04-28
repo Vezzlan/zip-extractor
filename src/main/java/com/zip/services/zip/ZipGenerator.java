@@ -30,7 +30,7 @@ public class ZipGenerator {
         final var pythonFileName = String.format("%s.py", user.name());
         final var jsonFileName = String.format("%s.json", user.name());
 
-        ZipFileHandler.writeToOutputStream(outputStream, zipOutputStream -> {
+        ZipFileHandler.writeTo(outputStream, zipOutputStream -> {
             addZipEntry(zipOutputStream, pythonFileName, pythonResource);
             addZipEntry(zipOutputStream, jsonFileName, user);
         });

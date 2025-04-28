@@ -16,12 +16,16 @@ public class ZipContentProcessor {
 
     private static final String JSON = "json";
 
+    private static final String JSON_FILE = ".json";
+
     private static final String PYTHON = "python";
+
+    private static final String PYTHON_FILE = ".py";
 
     public Map<String, ZipEntryPair> mapZipEntriesToFilePairs(ZipFile zipFile) {
         return zipFile.stream()
                 .filter(isMacOsResource().negate())
-                .filter(this::isJsonOrPython)
+                .filter(isFile(JSON_FILE).or(isFile(PYTHON_FILE)))
                 .collect(groupingBy(
                         this::getFileName,
                         collectingAndThen(
@@ -45,8 +49,8 @@ public class ZipContentProcessor {
         return (zipEntry) -> zipEntry.getName().startsWith("__MACOSX");
     }
 
-    private boolean isJsonOrPython(ZipEntry zipEntry) {
-        return zipEntry.getName().endsWith(".json") || zipEntry.getName().endsWith(".py");
+    private Predicate<ZipEntry> isFile(String fileExtension) {
+        return (zipEntry) -> zipEntry.getName().endsWith(fileExtension);
     }
 
     private String getFileName(ZipEntry zipEntry) {
@@ -54,7 +58,7 @@ public class ZipContentProcessor {
     }
 
     private String getFileType(ZipEntry entry) {
-        return entry.getName().endsWith(".json") ? JSON : PYTHON;
+        return entry.getName().endsWith(JSON_FILE) ? JSON : PYTHON;
     }
 
 }

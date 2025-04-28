@@ -6,17 +6,17 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipFileHandler {
 
-    public static <T> T openZipFile(File file, ZipFileReader<T> reader) {
+    public static <T> T useFile(File file, ZipFunction<T> zipFunction) {
         try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ)) {
-            return reader.read(zipFile);
+            return zipFunction.apply(zipFile);
         } catch (IOException e) {
             throw new RuntimeException("Error processing zip file", e);
         }
     }
 
-    public static void writeToOutputStream(OutputStream outputStream, ZipFileWriter writer) {
+    public static void writeTo(OutputStream outputStream, ZipCallable<ZipOutputStream> zipCallable) {
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
-            writer.write(zipOutputStream);
+            zipCallable.call(zipOutputStream);
         } catch (IOException e) {
             throw new RuntimeException("Error writing zip file", e);
         }

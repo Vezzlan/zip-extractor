@@ -1,2 +1,4 @@
 com/zip/services/KafkaCommandService.class
+com/zip/zipUtils/ZipFunction.class
 com/zip/services/zip/ZipContentProcessor.class
+com/zip/zipUtils/ZipCallable.class

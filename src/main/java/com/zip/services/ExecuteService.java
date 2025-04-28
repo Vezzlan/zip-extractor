@@ -53,7 +53,7 @@ public class ExecuteService {
     }
 
     public List<String> convertEntriesToIds(File file) {
-        final var entries = ZipFileHandler.openZipFile(file, zipContentProcessor::listZipEntries);
+        final var entries = ZipFileHandler.useFile(file, zipContentProcessor::listZipEntries);
         return getIdFromFileClient(entries).stream()
                 .map(name -> switch (name) {
                     case Success(String result) -> result;
@@ -65,7 +65,7 @@ public class ExecuteService {
     private List<Try<String>> getIdFromFileClient(List<String> fileNames) {
         return fileNames.stream()
                 .map(code -> Try.of(() -> fileClient.getFileId(code)))
-                .map(try -> try.map(UUID::toString))
+                .map(tryOf -> tryOf.map(UUID::toString))
                 .toList();
     }
 

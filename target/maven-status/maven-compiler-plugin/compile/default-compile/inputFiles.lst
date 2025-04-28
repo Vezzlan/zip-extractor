@@ -13,6 +13,6 @@
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/services/KafkaCommandService.java
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/services/zip/ZipContentProcessor.java
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/services/zip/ZipGenerator.java
+/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipCallable.java
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipFileHandler.java
-/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipFileReader.java
-/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipFileWriter.java
+/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipFunction.java

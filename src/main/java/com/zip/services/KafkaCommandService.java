@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -38,17 +37,16 @@ public class KafkaCommandService {
     }
 
     public List<KafkaCommand> createKafkaCommands(File file) {
-        return ZipFileHandler.openZipFile(file, zipFile -> {
-            final var filePairsMap = zipContentProcessor.mapZipEntriesToFilePairs(zipFile);
-            return convertToKafkaCommands(zipFile, filePairsMap);
-        });
+        return ZipFileHandler.useFile(file, this::convertToKafkaCommands);
     }
 
-    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile, Map<String, ZipEntryPair> zipEntryMap) {
-        if (hasMissingFiles(zipEntryMap)) {
+    private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile) {
+        final var filePairsMap = zipContentProcessor.mapZipEntriesToFilePairs(zipFile);
+
+        if (hasMissingFiles(filePairsMap)) {
             return Collections.emptyList();
         }
-        return zipEntryMap.values().stream()
+        return filePairsMap.values().stream()
                 .map(zipEntryPair -> createKafkaCommand(zipFile, zipEntryPair))
                 .toList();
     }
