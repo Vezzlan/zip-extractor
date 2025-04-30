@@ -1,6 +1,6 @@
 package com.zip.services.zip;
 
-import com.zip.zipUtils.ZipFileHandler;
+import com.zip.zipUtils.ZipReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -10,19 +10,19 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ZipContentProcessorTest {
+public class ZipContentMapperTest {
 
-    private ZipContentProcessor zipContentProcessor;
+    private ZipContentMapper zipContentMapper;
 
     @BeforeEach
     void setup() {
-        zipContentProcessor = new ZipContentProcessor();
+        zipContentMapper = new ZipContentMapper();
     }
 
     @Test
     public void whenZipContainsPairOfJsonAndPythonFiles_AllEntriesShouldBeMapped() {
         final var file = getZip("valid.zip");
-        final var result = ZipFileHandler.useFile(file, zipFile -> zipContentProcessor.mapZipEntriesToFilePairs(zipFile));
+        final var result = ZipReader.openAndApply(file, zipFile -> zipContentMapper.mapZipEntriesToFilePairs(zipFile));
 
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),
@@ -37,7 +37,7 @@ public class ZipContentProcessorTest {
     @Test
     public void whenJsonFileIsMissing_mapShouldHaveEmptyJsonEntry() {
         final var file = getZip("missing_json.zip");
-        final var result = ZipFileHandler.useFile(file, zipFile -> zipContentProcessor.mapZipEntriesToFilePairs(zipFile));
+        final var result = ZipReader.openAndApply(file, zipFile -> zipContentMapper.mapZipEntriesToFilePairs(zipFile));
 
         assertAll(
                 () -> assertNotNull(result.get("file1").json()),

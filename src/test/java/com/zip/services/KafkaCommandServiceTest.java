@@ -3,7 +3,7 @@ package com.zip.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
-import com.zip.services.zip.ZipContentProcessor;
+import com.zip.services.zip.ZipContentMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -21,9 +21,9 @@ class KafkaCommandServiceTest {
     @BeforeEach
     void setup() {
         ObjectMapper objectMapper = new ObjectMapper();
-        ZipContentProcessor zipContentProcessor = new ZipContentProcessor();
+        ZipContentMapper zipContentMapper = new ZipContentMapper();
         FakeFileClient fileClient = new FakeFileClient();
-        kafkaCommandService = new KafkaCommandService(objectMapper, zipContentProcessor, fileClient);
+        kafkaCommandService = new KafkaCommandService(objectMapper, zipContentMapper, fileClient);
     }
 
     @Test

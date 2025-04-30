@@ -5,27 +5,28 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static java.util.stream.Collectors.*;
 
 @Component
-public class ZipContentProcessor {
+public class ZipContentMapper {
 
     private static final String JSON = "json";
 
-    private static final String JSON_FILE = ".json";
+    private static final String JSON_EXT = ".json";
 
     private static final String PYTHON = "python";
 
-    private static final String PYTHON_FILE = ".py";
+    private static final String PYTHON_EXT = ".py";
+
+    private static final String MAC_OS_RESOURCE = "__MACOSX";
 
     public Map<String, ZipEntryPair> mapZipEntriesToFilePairs(ZipFile zipFile) {
         return zipFile.stream()
-                .filter(isMacOsResource().negate())
-                .filter(isFile(JSON_FILE).or(isFile(PYTHON_FILE)))
+                .filter(zipEntry -> !isMacOsResource(zipEntry))
+                .filter(this::isJsonOrPython)
                 .collect(groupingBy(
                         this::getFileName,
                         collectingAndThen(
@@ -40,17 +41,17 @@ public class ZipContentProcessor {
 
     public List<String> listZipEntries(ZipFile zipFile) {
         return zipFile.stream()
-                .filter(isMacOsResource().negate())
+                .filter(entry -> !isMacOsResource(entry))
                 .map(ZipEntry::getName)
                 .toList();
     }
 
-    private Predicate<ZipEntry> isMacOsResource() {
-        return (zipEntry) -> zipEntry.getName().startsWith("__MACOSX");
+    private boolean isMacOsResource(ZipEntry zipEntry) {
+        return zipEntry.getName().startsWith(MAC_OS_RESOURCE);
     }
 
-    private Predicate<ZipEntry> isFile(String fileExtension) {
-        return (zipEntry) -> zipEntry.getName().endsWith(fileExtension);
+    private boolean isJsonOrPython(ZipEntry zipEntry) {
+        return zipEntry.getName().endsWith(JSON_EXT) || zipEntry.getName().endsWith(PYTHON_EXT);
     }
 
     private String getFileName(ZipEntry zipEntry) {
@@ -58,7 +59,7 @@ public class ZipContentProcessor {
     }
 
     private String getFileType(ZipEntry entry) {
-        return entry.getName().endsWith(JSON_FILE) ? JSON : PYTHON;
+        return entry.getName().endsWith(JSON_EXT) ? JSON : PYTHON;
     }
 
 }

@@ -7,8 +7,8 @@ import com.zip.exceptions.Try;
 import com.zip.model.KafkaCommand;
 import com.zip.model.ResourceIds;
 import com.zip.model.User;
-import com.zip.services.zip.ZipContentProcessor;
-import com.zip.zipUtils.ZipFileHandler;
+import com.zip.services.zip.ZipContentMapper;
+import com.zip.zipUtils.ZipReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,13 +23,13 @@ public class ExecuteService {
 
     private final FakeFileClient fileClient;
 
-    private final ZipContentProcessor zipContentProcessor;
+    private final ZipContentMapper zipContentMapper;
 
     @Autowired
-    public ExecuteService(KafkaCommandService kafkaCommandService, FakeFileClient fileClient, ZipContentProcessor zipContentProcessor) {
+    public ExecuteService(KafkaCommandService kafkaCommandService, FakeFileClient fileClient, ZipContentMapper zipContentMapper) {
         this.kafkaCommandService = kafkaCommandService;
         this.fileClient = fileClient;
-        this.zipContentProcessor = zipContentProcessor;
+        this.zipContentMapper = zipContentMapper;
     }
 
     public List<ResourceIds> executeFlow(File file) {
@@ -53,7 +53,7 @@ public class ExecuteService {
     }
 
     public List<String> convertEntriesToIds(File file) {
-        final var entries = ZipFileHandler.useFile(file, zipContentProcessor::listZipEntries);
+        final var entries = ZipReader.openAndApply(file, zipContentMapper::listZipEntries);
         return getIdFromFileClient(entries).stream()
                 .map(name -> switch (name) {
                     case Success(String result) -> result;

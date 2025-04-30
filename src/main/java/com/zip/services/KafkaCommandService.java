@@ -6,8 +6,8 @@ import com.zip.client.FakeFileClient;
 import com.zip.model.KafkaCommand;
 import com.zip.model.User;
 import com.zip.model.ZipEntryPair;
-import com.zip.services.zip.ZipContentProcessor;
-import com.zip.zipUtils.ZipFileHandler;
+import com.zip.services.zip.ZipContentMapper;
+import com.zip.zipUtils.ZipReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,23 +25,23 @@ public class KafkaCommandService {
 
     private final ObjectMapper objectMapper;
 
-    private final ZipContentProcessor zipContentProcessor;
+    private final ZipContentMapper zipContentMapper;
 
     private final FakeFileClient fileClient;
 
     @Autowired
-    public KafkaCommandService(ObjectMapper objectMapper, ZipContentProcessor zipContentProcessor, FakeFileClient fileClient) {
+    public KafkaCommandService(ObjectMapper objectMapper, ZipContentMapper zipContentMapper, FakeFileClient fileClient) {
         this.objectMapper = objectMapper;
-        this.zipContentProcessor = zipContentProcessor;
+        this.zipContentMapper = zipContentMapper;
         this.fileClient = fileClient;
     }
 
     public List<KafkaCommand> createKafkaCommands(File file) {
-        return ZipFileHandler.useFile(file, this::convertToKafkaCommands);
+        return ZipReader.openAndApply(file, this::convertToKafkaCommands);
     }
 
     private List<KafkaCommand> convertToKafkaCommands(ZipFile zipFile) {
-        final var filePairsMap = zipContentProcessor.mapZipEntriesToFilePairs(zipFile);
+        final var filePairsMap = zipContentMapper.mapZipEntriesToFilePairs(zipFile);
 
         if (hasMissingFiles(filePairsMap)) {
             return Collections.emptyList();

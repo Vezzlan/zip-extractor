@@ -1,4 +1,4 @@
-package com.zip.zipUtils;
+package com.zip.zipUtils.functions;
 
 import java.io.IOException;
 import java.util.zip.ZipFile;

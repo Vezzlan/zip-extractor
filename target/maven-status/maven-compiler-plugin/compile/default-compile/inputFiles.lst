@@ -11,8 +11,9 @@
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/model/ZipEntryPair.java
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/services/ExecuteService.java
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/services/KafkaCommandService.java
-/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/services/zip/ZipContentProcessor.java
+/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/services/zip/ZipContentMapper.java
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/services/zip/ZipGenerator.java
-/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipCallable.java
-/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipFileHandler.java
-/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipFunction.java
+/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipReader.java
+/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipWriter.java
+/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/functions/ZipCallable.java
+/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/functions/ZipFunction.java
