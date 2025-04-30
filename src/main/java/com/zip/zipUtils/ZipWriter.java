@@ -3,7 +3,7 @@ package com.zip.zipUtils;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.model.User;
-import com.zip.zipUtils.functions.UseInstance;
+import com.zip.zipUtils.functional_interfaces.UseInstance;
 import org.springframework.core.io.Resource;
 
 import java.io.*;
@@ -41,21 +41,11 @@ public final class ZipWriter {
 
     public void addEntry(String fileName, User user) throws IOException {
         zipOutputStream.putNextEntry(new ZipEntry(fileName));
-        convertToJson(zipOutputStream, user);
+        objectMapper.writeValue(zipOutputStream, user);
         zipOutputStream.closeEntry();
     }
 
     private void close() throws IOException {
         zipOutputStream.close();
-    }
-
-    private void addZipEntryAsBytes(String fileName, User user) throws IOException {
-        zipOutputStream.putNextEntry(new ZipEntry(fileName));
-        zipOutputStream.write(objectMapper.writeValueAsBytes(user));
-        zipOutputStream.closeEntry();
-    }
-
-    private void convertToJson(ZipOutputStream zipOutputStream, User user) throws IOException {
-        objectMapper.writeValue(zipOutputStream, user);
     }
 }

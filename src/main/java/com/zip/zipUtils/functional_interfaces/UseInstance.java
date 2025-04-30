@@ -1,4 +1,4 @@
-package com.zip.zipUtils.functions;
+package com.zip.zipUtils.functional_interfaces;
 
 @FunctionalInterface
 public interface UseInstance<T, X extends Throwable> {

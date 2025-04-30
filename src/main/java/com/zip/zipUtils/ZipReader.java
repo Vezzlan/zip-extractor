@@ -1,6 +1,6 @@
 package com.zip.zipUtils;
 
-import com.zip.zipUtils.functions.ZipFunction;
+import com.zip.zipUtils.functional_interfaces.ZipFunction;
 
 import java.io.File;
 import java.io.IOException;
