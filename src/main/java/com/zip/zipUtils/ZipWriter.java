@@ -22,10 +22,10 @@ public final class ZipWriter {
         objectMapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
     }
 
-    public static void use(OutputStream outputStream, UseInstance<ZipWriter, IOException> zipCallable) throws IOException {
+    public static void use(OutputStream outputStream, UseInstance<ZipWriter, IOException> zipConsumer) throws IOException {
         ZipWriter zipWriter = new ZipWriter(outputStream);
         try {
-            zipCallable.accept(zipWriter);
+            zipConsumer.accept(zipWriter);
         } finally {
             zipWriter.close();
         }
