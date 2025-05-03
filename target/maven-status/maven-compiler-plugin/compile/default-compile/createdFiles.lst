@@ -1,6 +1,6 @@
 com/zip/zipUtils/ZipWriter.class
-com/zip/zipUtils/functions/ZipFunction.class
 com/zip/services/KafkaCommandService.class
 com/zip/zipUtils/ZipReader.class
+com/zip/zipUtils/functional_interfaces/ZipFunction.class
+com/zip/zipUtils/functional_interfaces/UseInstance.class
 com/zip/services/zip/ZipContentMapper.class
-com/zip/zipUtils/functions/ZipCallable.class

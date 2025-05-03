@@ -15,11 +15,9 @@ public class ZipContentMapper {
 
     private static final String JSON = "json";
 
-    private static final String JSON_EXT = ".json";
+    private static final String PYTHON = "py";
 
-    private static final String PYTHON = "python";
-
-    private static final String PYTHON_EXT = ".py";
+    private static final String DOT = ".";
 
     private static final String MAC_OS_RESOURCE = "__MACOSX";
 
@@ -51,15 +49,15 @@ public class ZipContentMapper {
     }
 
     private boolean isJsonOrPython(ZipEntry zipEntry) {
-        return zipEntry.getName().endsWith(JSON_EXT) || zipEntry.getName().endsWith(PYTHON_EXT);
+        return zipEntry.getName().endsWith(DOT + JSON) || zipEntry.getName().endsWith(DOT + PYTHON);
     }
 
     private String getFileName(ZipEntry zipEntry) {
-        return zipEntry.getName().substring(0, zipEntry.getName().indexOf("."));
+        return zipEntry.getName().substring(0, zipEntry.getName().indexOf(DOT));
     }
 
     private String getFileType(ZipEntry entry) {
-        return entry.getName().endsWith(JSON_EXT) ? JSON : PYTHON;
+        return entry.getName().endsWith(DOT + JSON) ? JSON : PYTHON;
     }
 
 }

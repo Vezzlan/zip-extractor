@@ -15,5 +15,5 @@
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/services/zip/ZipGenerator.java
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipReader.java
 /Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/ZipWriter.java
-/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/functions/ZipCallable.java
-/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/functions/ZipFunction.java
+/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/functional_interfaces/UseInstance.java
+/Users/Mathias/Appar/zip-extractor/src/main/java/com/zip/zipUtils/functional_interfaces/ZipFunction.java
