@@ -1,6 +1,6 @@
 package com.zip.services.zip;
 
-import com.zip.zipUtils.ZipReader;
+import com.zip.zipUtils.read.ZipReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;

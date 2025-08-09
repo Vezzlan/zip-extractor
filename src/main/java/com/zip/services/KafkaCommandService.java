@@ -7,7 +7,7 @@ import com.zip.model.KafkaCommand;
 import com.zip.model.User;
 import com.zip.model.ZipEntryPair;
 import com.zip.services.zip.ZipContentMapper;
-import com.zip.zipUtils.ZipReader;
+import com.zip.zipUtils.read.ZipReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

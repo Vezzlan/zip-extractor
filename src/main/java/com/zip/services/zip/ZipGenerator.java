@@ -2,7 +2,7 @@ package com.zip.services.zip;
 
 import com.zip.client.FakeFileClient;
 import com.zip.model.User;
-import com.zip.zipUtils.ZipWriter;
+import com.zip.zipUtils.write.ZipWriter;
 import org.springframework.stereotype.Service;
 
 import java.io.*;

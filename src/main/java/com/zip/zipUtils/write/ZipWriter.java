@@ -1,9 +1,8 @@
-package com.zip.zipUtils;
+package com.zip.zipUtils.write;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zip.model.User;
-import com.zip.zipUtils.functional_interfaces.UseInstance;
 import org.springframework.core.io.Resource;
 
 import java.io.*;
