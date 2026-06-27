@@ -1,4 +1,4 @@
-package com.zip.zipUtils.read;
+package com.zip.zipUtils.read.file;
 
 import java.io.IOException;
 import java.util.zip.ZipFile;

@@ -1,6 +1,8 @@
 package com.zip.services.zip;
 
 import com.zip.model.ZipEntryPair;
+import com.zip.zipUtils.read.inputstream.ZipInputStreamCallable;
+import com.zip.zipUtils.read.inputstream.ZipInputStreamReader;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -10,6 +12,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import static com.zip.zipUtils.read.inputstream.ZipInputStreamReader.forEachEntry;
 import static java.util.stream.Collectors.*;
 
 @Component
@@ -33,7 +36,7 @@ public class ZipContentMapper {
     public Map<String, ZipEntryPair> mapZipEntriesToFilePairs2(ZipInputStream zipInputStream) throws IOException {
         Map<String, ZipEntryPairBuilder> grouped = new HashMap<>();
 
-        forEachEntry(zipInputStream, zipEntry -> {
+        ZipInputStreamReader.forEachEntry(zipInputStream, zipEntry -> {
             if (!isMacOsResource(zipEntry) && isJsonOrPython(zipEntry)) {
                 String fileName = getFileName(zipEntry);
 
@@ -52,25 +55,6 @@ public class ZipContentMapper {
                         Map.Entry::getKey,
                         e -> new ZipEntryPair(e.getValue().json, e.getValue().python)
                 ));
-    }
-
-    private static void forEachEntry(
-            ZipInputStream zipInputStream,
-            ThrowingConsumer<ZipEntry> consumer) throws IOException {
-
-        ZipEntry entry;
-        while ((entry = zipInputStream.getNextEntry()) != null) {
-            try {
-                consumer.accept(entry);
-            } finally {
-                zipInputStream.closeEntry();
-            }
-        }
-    }
-
-    @FunctionalInterface
-    private interface ThrowingConsumer<T> {
-        void accept(T value) throws IOException;
     }
 
     /**
