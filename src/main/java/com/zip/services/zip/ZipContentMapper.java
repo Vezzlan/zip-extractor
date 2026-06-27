@@ -1,6 +1,7 @@
 package com.zip.services.zip;
 
 import com.zip.model.ZipEntryPair;
+import com.zip.model.ZipEntryPairBuilder;
 import com.zip.zipUtils.read.inputstream.ZipInputStreamCallable;
 import com.zip.zipUtils.read.inputstream.ZipInputStreamReader;
 import org.springframework.stereotype.Component;
@@ -23,11 +24,6 @@ public class ZipContentMapper {
     private static final String PYTHON = "py";
 
     private static final String MAC_OS_RESOURCE = "__MACOSX";
-
-    private static final class ZipEntryPairBuilder {
-        ZipEntry json;
-        ZipEntry python;
-    }
     /**
      *
      * Using ZipInputStream and read directly from stream instead of saving file to disc.
