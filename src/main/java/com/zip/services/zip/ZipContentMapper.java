@@ -2,7 +2,6 @@ package com.zip.services.zip;
 
 import com.zip.model.ZipEntryPair;
 import com.zip.model.ZipEntryPairBuilder;
-import com.zip.zipUtils.read.inputstream.ZipInputStreamCallable;
 import com.zip.zipUtils.read.inputstream.ZipInputStreamReader;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import static com.zip.zipUtils.read.inputstream.ZipInputStreamReader.forEachEntry;
 import static java.util.stream.Collectors.*;
 
 @Component
